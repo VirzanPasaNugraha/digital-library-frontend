@@ -1,0 +1,364 @@
+import { useState, useEffect } from "react";
+import { api } from "../../api/http";
+
+export default function UploadLaporan() {
+  const [judul, setJudul] = useState("");
+  const [penulis, setPenulis] = useState("");
+  const [nim, setNim] = useState("");
+  const [prodi, setProdi] = useState("");
+  const [tipe, setTipe] = useState("Skripsi");
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [tahun, setTahun] = useState("");
+
+  const [pembimbing, setPembimbing] = useState([]);
+  const [inputPembimbing, setInputPembimbing] = useState("");
+
+  const [kataKunci, setKataKunci] = useState([]);
+  const [inputKeyword, setInputKeyword] = useState("");
+
+  const [abstrak, setAbstrak] = useState("");
+  const [file, setFile] = useState(null);
+
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+
+
+  useEffect(() => {
+  return () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+  };
+}, [previewUrl]);
+
+
+  /* ================= VALIDATION ================= */
+  const validateForm = () => {
+    const e = {};
+
+    if (judul.length < 10 || judul.length > 80)
+      e.judul = "Judul minimal 10 dan maksimal 80 karakter";
+
+    if (!penulis || penulis.length > 40)
+      e.penulis = "Penulis wajib diisi (maks 40 karakter)";
+
+    if (nim.length < 10 || nim.length > 15)
+      e.nim = "NIM minimal 10 dan maksimal 15 karakter";
+
+    if (!prodi) e.prodi = "Program studi wajib dipilih";
+
+    if (!tahun || tahun.length !== 4)
+      e.tahun = "Tahun harus 4 digit";
+
+    if (kataKunci.length < 1 || kataKunci.length > 20)
+      e.kataKunci = "Minimal 1 dan maksimal 20 kata kunci";
+
+    if (!file) e.file = "File PDF wajib diupload";
+
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  /* ================= KEYWORD ================= */
+  const handleKeywordKeyDown = (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+
+    const value = inputKeyword.trim();
+    if (!value) return;
+
+    if (value.length < 4 || value.length > 20) {
+      setErrors((p) => ({ ...p, kataKunci: "Keyword 4–20 karakter" }));
+      return;
+    }
+
+    if (kataKunci.some((k) => k.toLowerCase() === value.toLowerCase())) return;
+
+    setKataKunci([...kataKunci, value]);
+    setInputKeyword("");
+    setErrors((p) => ({ ...p, kataKunci: undefined }));
+  };
+
+  const removeKeyword = (i) => {
+    const updated = kataKunci.filter((_, idx) => idx !== i);
+    setKataKunci(updated);
+    if (updated.length >= 1)
+      setErrors((p) => ({ ...p, kataKunci: undefined }));
+  };
+
+  /* ================= PEMBIMBING ================= */
+  const handlePembimbingKeyDown = (e) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+
+    const value = inputPembimbing.trim();
+    if (!value) return;
+
+    if (value.length < 5 || value.length > 30) {
+      setErrors((p) => ({
+        ...p,
+        pembimbing: "Nama pembimbing 5–30 karakter",
+      }));
+      return;
+    }
+
+    if (pembimbing.some((p) => p.toLowerCase() === value.toLowerCase())) return;
+
+    setPembimbing([...pembimbing, value]);
+    setInputPembimbing("");
+    setErrors((p) => ({ ...p, pembimbing: undefined }));
+  };
+
+  const removePembimbing = (i) => {
+    setPembimbing(pembimbing.filter((_, idx) => idx !== i));
+  };
+
+  /* ================= FILE ================= */
+ const handleFileChange = (e) => {
+  const f = e.target.files?.[0];
+  if (!f) return;
+
+  if (f.type !== "application/pdf") {
+    setErrors((p) => ({ ...p, file: "File harus PDF" }));
+    return;
+  }
+
+  if (f.size > 10 * 1024 * 1024) {
+    setErrors((p) => ({ ...p, file: "Ukuran maksimal 10 MB" }));
+    return;
+  }
+
+  setFile(f);
+  setPreviewUrl(URL.createObjectURL(f)); // 👈 TAMBAHAN PENTING
+  setErrors((p) => ({ ...p, file: undefined }));
+};
+
+
+  /* ================= SUBMIT ================= */
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+
+    if (!validateForm()) return;
+
+    try {
+      setLoading(true);
+
+      const formData = new FormData();
+      formData.append("judul", judul);
+      formData.append("penulis", penulis);
+      formData.append("nim", nim);
+      formData.append("prodi", prodi);
+      formData.append("tipe", tipe);
+      formData.append("tahun", tahun);
+      formData.append("abstrak", abstrak);
+      formData.append("pembimbing", JSON.stringify(pembimbing));
+      formData.append("keywords", JSON.stringify(kataKunci));
+      formData.append("file", file);
+
+      const res = await api.post("/documents", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setMessage(res?.data?.message || "Upload berhasil. Menunggu review admin.");
+
+      setJudul("");
+      setPenulis("");
+      setNim("");
+      setProdi("");
+      setTipe("Skripsi");
+      setTahun("");
+      setPembimbing([]);
+      setInputPembimbing("");
+      setKataKunci([]);
+      setInputKeyword("");
+      setAbstrak("");
+      setFile(null);
+      setPreviewUrl("");
+      setErrors({});
+    } catch (err) {
+      setMessage(err?.response?.data?.message || "Upload gagal.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inputClass = (err) =>
+    `w-full p-3 mt-1 border rounded-lg focus:ring-2 ${
+      err
+        ? "border-red-500 focus:ring-red-400"
+        : "border-gray-300 focus:ring-green-500"
+    }`;
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6">
+      <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white shadow-lg rounded-xl">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <InputField label="Judul Laporan" value={judul} onChange={setJudul} error={errors.judul} cls={inputClass} />
+          <InputField label="Penulis" value={penulis} onChange={setPenulis} error={errors.penulis} cls={inputClass} />
+          <InputField label="NIM" value={nim} onChange={setNim} error={errors.nim} cls={inputClass} />
+          <SelectField
+            label="Program Studi"
+            value={prodi}
+            onChange={setProdi}
+            error={errors.prodi}
+            cls={inputClass}
+            options={[
+              { label: "Informatika (IF)", value: "IF" },
+              { label: "Sistem Informasi (SI)", value: "SI" },
+            ]}
+          />
+          <SelectField
+            label="Jenis Dokumen"
+            value={tipe}
+            onChange={setTipe}
+            cls={inputClass}
+            options={[
+              { label: "Skripsi", value: "Skripsi" },
+              { label: "Laporan KP", value: "Laporan KP" },
+            ]}
+          />
+          <InputField label="Tahun" value={tahun} onChange={setTahun} error={errors.tahun} cls={inputClass} />
+        </div>
+
+        <ChipInput
+          label="Pembimbing"
+          values={pembimbing}
+          input={inputPembimbing}
+          setInput={setInputPembimbing}
+          onKeyDown={handlePembimbingKeyDown}
+          onRemove={removePembimbing}
+          error={errors.pembimbing}
+        />
+
+        <ChipInput
+          label="Kata Kunci"
+          values={kataKunci}
+          input={inputKeyword}
+          setInput={setInputKeyword}
+          onKeyDown={handleKeywordKeyDown}
+          onRemove={removeKeyword}
+          error={errors.kataKunci}
+        />
+
+        <TextAreaField label="Abstrak" value={abstrak} onChange={setAbstrak} />
+
+        <div>
+          <label className="block mb-1 text-sm font-medium">Upload File PDF</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={handleFileChange}
+            className={inputClass(errors.file)}
+          />
+          {file && <p className="mt-1 text-sm text-gray-600">File terpilih: {file.name}</p>}
+          {errors.file && <p className="text-xs text-red-600">{errors.file}</p>}
+        </div>
+        {previewUrl && (
+  <iframe
+    src={previewUrl}
+    className="w-full h-64 border rounded"
+    title="Preview PDF"
+  />
+)}
+
+
+        {message && (
+          <div className="p-3 text-sm text-green-800 border border-green-200 rounded-lg bg-green-50">
+            {message}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-3 font-semibold text-white bg-green-600 rounded-lg disabled:opacity-70"
+        >
+          {loading ? "Mengunggah..." : "Upload"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/* ===================== COMPONENTS ===================== */
+
+function InputField({ label, value, onChange, error, cls }) {
+  return (
+    <div>
+      <label className="block mb-1 text-sm font-medium">{label}</label>
+      <input value={value} onChange={(e) => onChange(e.target.value)} className={cls(error)} />
+      {error && <p className="text-xs text-red-600">{error}</p>}
+    </div>
+  );
+}
+
+function SelectField({ label, value, onChange, options, error, cls }) {
+  return (
+    <div>
+      <label className="block mb-1 text-sm font-medium">{label}</label>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className={cls(error)}>
+        <option value="">Pilih {label}</option>
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+      </select>
+      {error && <p className="text-xs text-red-600">{error}</p>}
+    </div>
+  );
+}
+
+function TextAreaField({ label, value, onChange }) {
+  return (
+    <div>
+      <label className="block mb-1 text-sm font-medium">{label}</label>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full h-32 p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-green-500"
+      />
+    </div>
+  );
+}
+
+function ChipInput({ label, values, input, setInput, onKeyDown, onRemove, error }) {
+  return (
+    <div>
+      <label className="block mb-1 text-sm font-medium">{label}</label>
+
+      <div
+        className={`flex flex-wrap gap-2 p-3 border rounded-lg focus-within:ring-2 ${
+          error
+            ? "border-red-500 focus-within:ring-red-400"
+            : "border-gray-300 focus-within:ring-green-500"
+        }`}
+      >
+        {values.map((v, i) => (
+          <span
+            key={i}
+            className="flex items-center gap-1 px-2 py-1 text-xs bg-green-100 rounded-full"
+          >
+            {v}
+            <button
+              type="button"
+              onClick={() => onRemove(i)}
+              className="font-bold text-green-700 hover:text-red-600"
+            >
+              ×
+            </button>
+          </span>
+        ))}
+
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={onKeyDown}
+          className="flex-1 min-w-[200px] outline-none"
+          placeholder="Tekan Enter"
+        />
+      </div>
+
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
+    </div>
+  );
+}
