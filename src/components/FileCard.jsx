@@ -67,9 +67,7 @@ export default function FileCard({ file }) {
             transition-all duration-300
           "
         >
-          <span className="mr-1 transition-transform group-hover:translate-x-1">
-            📖
-          </span>
+
           Lihat Detail
         </Link>
       </div>
