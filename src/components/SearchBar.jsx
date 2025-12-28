@@ -1,37 +1,41 @@
-import React from "react";
-import { Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import SearchBar from "@/components/SearchBar";
+import { api } from "@/api/http";
 
-export default function SearchBar({ value, onChange }) {
+export default function ArsipPage() {
+  const [query, setQuery] = useState("");
+  const [docs, setDocs] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!query.trim()) return;
+
+    const t = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await api.get("/api/documents/search", {
+          params: { q: searchValue },
+        });
+        setDocs(res.data.documents || []);
+      } finally {
+        setLoading(false);
+      }
+    }, 400); // debounce
+
+    return () => clearTimeout(t);
+  }, [query]);
+
   return (
-    <div className="relative mb-6">
-      {/* Icon */}
-      <span className="absolute inset-y-0 left-4 flex items-center text-green-600">
-        <Search size={18} />
-      </span>
+    <>
+      <SearchBar value={query} onChange={(e) => setQuery(e.target.value)} />
 
-      <input
-        type="text"
-        placeholder="Cari judul, penulis, atau kata kunci..."
-        value={value}
-        onChange={onChange}
-        className="
-          w-full
-          pl-11 pr-4 py-3
-          text-sm md:text-base
-          rounded-xl
-          border border-green-200
-          bg-white
-          shadow-sm
-          text-gray-800
-          placeholder:text-gray-400
-          transition-all duration-200
-          focus:outline-none
-          focus:ring-2 focus:ring-green-300
-          focus:border-green-400
-          hover:border-green-300
-          hover:shadow-md
-        "
-      />
-    </div>
+      {loading && <p>Mencari secara semantic...</p>}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {docs.map((d) => (
+          <DocumentCard key={d.id} doc={d} />
+        ))}
+      </div>
+    </>
   );
 }
