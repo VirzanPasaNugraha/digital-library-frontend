@@ -68,8 +68,16 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
         : "text-white hover:text-yellow-200"
     }`;
 
+    const isHome = location.pathname === "/";
+
   return (
-    <nav className="fixed top-0 left-0 w-full bg-green-700 z-50 shadow">
+   <nav
+  className={`
+    fixed top-0 left-0 w-full z-50 transition-all duration-300
+    ${isHome ? "bg-transparent shadow-none" : "bg-green-700 shadow"}
+  `}
+>
+
       {/* ===================== TOP BAR ===================== */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex justify-between items-center">
         {/* Logo */}

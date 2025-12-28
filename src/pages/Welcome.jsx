@@ -1,4 +1,3 @@
-// src/pages/Welcome.jsx
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import BgFTI from "../assets/bg_fti.jpg";
@@ -13,20 +12,20 @@ export default function Welcome() {
 
   return (
     <>
-      {/* HERO SECTION */}
-      <div className="relative w-full h-[100vh] flex items-center justify-center text-center text-white overflow-hidden">
-        {/* Background Image + Blur */}
+      {/* ===================== HERO ===================== */}
+      <div className="relative w-full min-h-screen flex items-center justify-center text-center text-white overflow-hidden">
+        {/* Background Image */}
         <img
           src={BgFTI}
           alt="Library Background"
-          className="absolute inset-0 w-full h-full object-cover brightness-70 blur-[1.5px]"
+          className="absolute inset-0 w-full h-full object-cover brightness-70 blur-[1.5px] block"
         />
 
-        {/* Overlay Hitam Transparan */}
+        {/* Overlay */}
         <div className="absolute inset-0 bg-black/60" />
 
-        {/* Konten Teks */}
-        <div className="relative z-10 px-6 py-24 md:py-32 max-w-3xl mt-16 md:mt-0">
+        {/* Content */}
+        <div className="relative z-10 px-6 py-24 max-w-3xl">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight drop-shadow-xl">
             {user?.role?.startsWith("admin")
               ? "Selamat Datang, Admin"
@@ -47,7 +46,7 @@ export default function Welcome() {
         </div>
       </div>
 
-      {/* FEATURES SECTION */}
+      {/* ===================== FEATURES ===================== */}
       <section className="max-w-6xl mx-auto px-6 py-20 space-y-12 bg-white relative z-20">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-green-800">
           Mengapa Memilih Digital Library FTI?
