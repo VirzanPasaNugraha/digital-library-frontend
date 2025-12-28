@@ -14,7 +14,7 @@ export default function Welcome() {
   return (
     <>
       {/* HERO SECTION */}
-      <div className="relative w-full min-h-[75vh] flex items-center justify-center text-center text-white overflow-hidden">
+      <div className="relative w-full h-[100vh] flex items-center justify-center text-center text-white overflow-hidden">
         {/* Background Image + Blur */}
         <img
           src={BgFTI}
@@ -26,7 +26,7 @@ export default function Welcome() {
         <div className="absolute inset-0 bg-black/60" />
 
         {/* Konten Teks */}
-        <div className="relative z-10 px-6 py-24 md:py-32 max-w-3xl">
+        <div className="relative z-10 px-6 py-24 md:py-32 max-w-3xl mt-16 md:mt-0">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight drop-shadow-xl">
             {user?.role?.startsWith("admin")
               ? "Selamat Datang, Admin"
@@ -48,7 +48,7 @@ export default function Welcome() {
       </div>
 
       {/* FEATURES SECTION */}
-      <section className="max-w-6xl mx-auto px-6 py-20 space-y-12">
+      <section className="max-w-6xl mx-auto px-6 py-20 space-y-12 bg-white relative z-20">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-green-800">
           Mengapa Memilih Digital Library FTI?
         </h2>

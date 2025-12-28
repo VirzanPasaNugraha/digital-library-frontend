@@ -104,9 +104,7 @@ export default function PDFPreview({ url }) {
   if (isMobile()) {
     return (
       <div className="flex flex-col items-center justify-center gap-3">
-        <p className="text-sm text-gray-600 text-center">
-          Preview PDF tidak didukung di mobile.
-        </p>
+        
         <a
           href={src}
           target="_blank"
