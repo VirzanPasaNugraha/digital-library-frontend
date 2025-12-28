@@ -11,16 +11,6 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  /* ===================== SCROLL DETECTOR ===================== */
-  useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 40);
-    };
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   /* ===================== LOCK SCROLL (MOBILE MENU) ===================== */
   useEffect(() => {
@@ -30,32 +20,30 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
     };
   }, [menuOpen]);
 
-  const isHome = location.pathname === "/";
-
-  const closeMenu = () => {
-    setMenuOpen(false);
-    setProfileOpen(false);
-  };
+  const closeMenu = () => setMenuOpen(false);
 
   const handleNav = (path) => {
     navigate(path);
     closeMenu();
+    setProfileOpen(false);
   };
 
   const handleDashboard = () => {
     if (!currentUser) return;
-    navigate(
-      currentUser.role === "mahasiswa"
-        ? "/mahasiswa/dashboard"
-        : "/admin/dashboard"
-    );
+    if (currentUser.role === "mahasiswa") {
+      navigate("/mahasiswa/dashboard");
+    } else {
+      navigate("/admin/dashboard");
+    }
     closeMenu();
+    setProfileOpen(false);
   };
 
   const handleLogout = () => {
     logout();
     navigate("/");
     closeMenu();
+    setProfileOpen(false);
   };
 
   const getAvatarText = () => {
@@ -63,42 +51,34 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
     if (currentUser.role?.startsWith("admin")) {
       return currentUser.prodi || "ADM";
     }
-    return currentUser.name
-      ?.split(" ")
-      .slice(0, 2)
-      .map((n) => n[0].toUpperCase())
-      .join("") || "U";
+    if (currentUser.name) {
+      return currentUser.name
+        .split(" ")
+        .slice(0, 2)
+        .map((n) => n[0].toUpperCase())
+        .join("");
+    }
+    return "U";
   };
 
   const navItemClass = (path) =>
-    `relative font-medium transition-colors ${
+    `relative font-medium transition-all break-words ${
       location.pathname === path
         ? "text-yellow-300"
         : "text-white hover:text-yellow-200"
     }`;
 
-  /* ===================== NAVBAR CLASS ===================== */
-  const navbarClass = `
-    fixed top-0 left-0 w-full z-50
-    transition-all duration-300
-    ${
-      isHome && !scrolled
-        ? "bg-transparent"
-        : "bg-green-700 shadow-md"
-    }
-  `;
-
   return (
-    <nav className={navbarClass}>
+    <nav className="fixed top-0 left-0 w-full bg-green-700 z-50 shadow">
       {/* ===================== TOP BAR ===================== */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex justify-between items-center">
         {/* Logo */}
         <div
           onClick={() => handleNav("/")}
-          className="flex items-center gap-2 cursor-pointer"
+          className="flex items-center gap-2 cursor-pointer min-w-0"
         >
-          <img src={LogoFti} alt="FTI" className="h-8 w-8" />
-          <span className="text-white font-bold text-lg">
+          <img src={LogoFti} alt="FTI" className="h-8 w-8 shrink-0" />
+          <span className="text-white font-bold text-lg break-words">
             Digital Library FTI
           </span>
         </div>
@@ -127,13 +107,19 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
           {!currentUser ? (
             <>
               <button
-                onClick={onLoginOpen}
+                onClick={() => {
+                  onLoginOpen();
+                  closeMenu();
+                }}
                 className="bg-yellow-400 text-green-900 px-4 py-2 rounded-lg font-semibold hover:bg-yellow-300"
               >
                 Masuk
               </button>
               <button
-                onClick={onRegisterOpen}
+                onClick={() => {
+                  onRegisterOpen();
+                  closeMenu();
+                }}
                 className="bg-white text-green-900 px-4 py-2 rounded-lg font-semibold hover:bg-gray-100"
               >
                 Daftar
@@ -143,14 +129,14 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
             <div className="relative">
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="w-10 h-10 rounded-full bg-yellow-300 text-green-900 font-bold flex items-center justify-center"
+                className="w-10 h-10 rounded-full bg-yellow-300 text-green-900 font-bold flex items-center justify-center hover:bg-yellow-200"
               >
                 {getAvatarText()}
               </button>
 
               {profileOpen && (
                 <div className="absolute right-0 mt-2 w-44 bg-white rounded-lg shadow-lg overflow-hidden">
-                  <div className="px-4 py-2 text-sm text-gray-600 border-b">
+                  <div className="px-4 py-2 text-sm text-gray-600 border-b break-words">
                     {currentUser.name || "Admin"}
                   </div>
                   <button
@@ -175,6 +161,7 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
         <button
           className="md:hidden text-white text-2xl"
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
         >
           {menuOpen ? <FiX /> : <FiMenu />}
         </button>
@@ -184,17 +171,27 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
       <div
         className={`
           md:hidden bg-green-700 text-white px-6 pb-4 space-y-3
-          transition-all duration-300 overflow-hidden
+          transition-all duration-300
+          overflow-y-auto overflow-x-hidden
           ${menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"}
         `}
       >
-        <button onClick={() => handleNav("/beranda")} className="block w-full">
+        <button
+          onClick={() => handleNav("/beranda")}
+          className="block w-full text-left break-words"
+        >
           Beranda
         </button>
-        <button onClick={() => handleNav("/tentang")} className="block w-full">
+        <button
+          onClick={() => handleNav("/tentang")}
+          className="block w-full text-left break-words"
+        >
           Tentang
         </button>
-        <button onClick={() => handleNav("/bantuan")} className="block w-full">
+        <button
+          onClick={() => handleNav("/bantuan")}
+          className="block w-full text-left break-words"
+        >
           Bantuan
         </button>
 
@@ -202,21 +199,36 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
 
         {!currentUser ? (
           <>
-            <button onClick={onLoginOpen} className="block w-full">
+            <button
+              onClick={() => {
+                onLoginOpen();
+                closeMenu();
+              }}
+              className="block w-full text-left"
+            >
               Masuk
             </button>
-            <button onClick={onRegisterOpen} className="block w-full">
+            <button
+              onClick={() => {
+                onRegisterOpen();
+                closeMenu();
+              }}
+              className="block w-full text-left"
+            >
               Daftar
             </button>
           </>
         ) : (
           <>
-            <button onClick={handleDashboard} className="block w-full">
+            <button
+              onClick={handleDashboard}
+              className="block w-full text-left"
+            >
               Dashboard
             </button>
             <button
               onClick={handleLogout}
-              className="block w-full text-red-300"
+              className="block w-full text-left text-red-300"
             >
               Logout
             </button>
