@@ -80,7 +80,18 @@ export default function KelolaArsip() {
       const res = await adminUpdateDocument(id, payload);
       const updated = res?.document || res; // jaga-jaga bentuk response
 
-      setFiles((prev) => prev.map((f) => (f.id === id ? { ...f, ...updated } : f)));
+     setFiles((prev) =>
+  prev.map((f) =>
+    f.id === id
+      ? {
+          ...f,
+          ...updated,
+          status: f.status, // ⬅️ JANGAN BIARKAN KETIMPA
+        }
+      : f
+  )
+);
+
       setMessage("Dokumen berhasil diperbarui.");
       closeEdit();
     } catch (err) {
