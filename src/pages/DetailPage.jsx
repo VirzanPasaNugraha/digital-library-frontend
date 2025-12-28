@@ -27,7 +27,6 @@ export default function DetailPage() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  // 👉 SATU SUMBER KEBENARAN AUTH
   const isAuthenticated = Boolean(getToken());
 
   /* ===================== FETCH DATA ===================== */
@@ -72,7 +71,7 @@ export default function DetailPage() {
   /* ===================== RENDER ===================== */
   return (
     <div className="max-w-6xl px-4 py-6 mx-auto">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl">
+      <h1 className="mb-6 text-2xl font-bold text-gray-900 md:text-3xl break-words">
         {file.judul}
       </h1>
 
@@ -83,7 +82,7 @@ export default function DetailPage() {
             Informasi Dokumen
           </h2>
 
-          <ul className="space-y-2 text-sm text-gray-700">
+          <ul className="space-y-2 text-sm text-gray-700 break-words">
             <li><b>Jenis Dokumen:</b> {file.tipe}</li>
             <li><b>Penulis:</b> {file.penulis}</li>
             <li><b>NIM:</b> {file.nim || "-"}</li>
@@ -106,7 +105,6 @@ export default function DetailPage() {
             </li>
           </ul>
 
-          {/* ===================== ACTION BUTTONS ===================== */}
           {isAuthenticated ? (
             <button
               onClick={() => setOpenPreview(true)}
@@ -126,7 +124,13 @@ export default function DetailPage() {
           <h2 className="mb-4 text-lg font-semibold text-green-700">
             Abstrak
           </h2>
-          <p className="text-sm leading-relaxed text-gray-600">
+          <p className="
+            text-sm
+            leading-relaxed
+            text-gray-600
+            break-words
+            whitespace-pre-line
+          ">
             {file.abstrak || "-"}
           </p>
         </div>
@@ -134,11 +138,22 @@ export default function DetailPage() {
 
       {/* ===================== PREVIEW MODAL ===================== */}
       {isAuthenticated && openPreview && file?.pdfUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
-          <div className="bg-white w-full max-w-5xl h-[90vh] rounded-xl shadow-lg relative flex flex-col">
+        <div className="fixed inset-0 z-50 bg-black/60 flex">
+          <div
+            className="
+              bg-white
+              w-full h-full
+              md:max-w-5xl md:h-[90vh]
+              md:rounded-xl
+              shadow-lg
+              flex flex-col
+              relative
+              m-auto
+            "
+          >
             <button
               onClick={() => setOpenPreview(false)}
-              className="absolute text-2xl text-gray-600 top-3 right-4 hover:text-black"
+              className="absolute top-3 right-4 text-2xl text-gray-600 hover:text-black"
             >
               ✕
             </button>
@@ -147,7 +162,7 @@ export default function DetailPage() {
               Lihat Dokumen
             </div>
 
-            <div className="flex-1 p-4 overflow-auto">
+            <div className="flex-1 overflow-hidden p-2 md:p-4">
               <PDFPreview url={file.pdfUrl} />
             </div>
           </div>

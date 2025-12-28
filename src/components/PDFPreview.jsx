@@ -9,23 +9,28 @@ function getToken() {
   );
 }
 
-// Convert "/api/..." jadi "http://localhost:4000/api/..." kalau perlu
+function isMobile() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 function toAbsoluteUrl(url) {
   if (!url) return "";
 
-  // sudah absolute / blob / data
-  if (/^(https?:)?\/\//i.test(url) || url.startsWith("blob:") || url.startsWith("data:")) {
+  if (
+    /^(https?:)?\/\//i.test(url) ||
+    url.startsWith("blob:") ||
+    url.startsWith("data:")
+  ) {
     return url;
   }
 
-  // kalau url dari backend kamu bentuknya "/api/...."
   if (url.startsWith("/api/")) {
-    const apiBase = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
-    const origin = apiBase.replace(/\/api\/?$/, ""); // "http://localhost:4000"
+    const apiBase =
+      import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+    const origin = apiBase.replace(/\/api\/?$/, "");
     return origin + url;
   }
 
-  // fallback: biarkan relatif
   return url;
 }
 
@@ -37,13 +42,11 @@ export default function PDFPreview({ url }) {
   const absUrl = useMemo(() => toAbsoluteUrl(url), [url]);
 
   useEffect(() => {
-    let cancelled = false;
-    let objectUrlToRevoke = "";
+    let revoked = "";
 
     async function load() {
       setLoading(true);
       setErr("");
-      setSrc("");
 
       if (!absUrl) {
         setErr("URL PDF kosong.");
@@ -51,19 +54,16 @@ export default function PDFPreview({ url }) {
         return;
       }
 
-      // kalau sudah blob:, langsung tampilkan
-      if (absUrl.startsWith("blob:") || absUrl.startsWith("data:")) {
+      // Mobile: tidak render iframe PDF
+      if (isMobile()) {
         setSrc(absUrl);
         setLoading(false);
         return;
       }
 
-      // Untuk endpoint file yang kemungkinan butuh auth, kita fetch pakai token -> blob
-      // (ini yang bikin preview admin PENDING tetap bisa)
       const token = getToken();
 
       try {
-        // Kalau tidak ada token, coba tampilkan direct (untuk dokumen publik DITERIMA)
         if (!token) {
           setSrc(absUrl);
           setLoading(false);
@@ -75,45 +75,56 @@ export default function PDFPreview({ url }) {
         });
 
         if (!res.ok) {
-          // Kalau dokumen publik, kadang server izinkan tanpa token. Tapi ini sudah pakai token.
-          // Tetap tampilkan pesan error yang masuk akal.
-          const msg = `Gagal memuat PDF (${res.status}).`;
-          throw new Error(msg);
+          throw new Error(`Gagal memuat PDF (${res.status})`);
         }
 
         const blob = await res.blob();
         const blobUrl = URL.createObjectURL(blob);
-        objectUrlToRevoke = blobUrl;
+        revoked = blobUrl;
 
-        if (!cancelled) {
-          setSrc(blobUrl);
-          setLoading(false);
-        }
+        setSrc(blobUrl);
+        setLoading(false);
       } catch (e) {
-        if (!cancelled) {
-          setErr(e?.message || "Gagal memuat PDF.");
-          setLoading(false);
-        }
+        setErr(e.message || "Gagal memuat PDF.");
+        setLoading(false);
       }
     }
 
     load();
 
     return () => {
-      cancelled = true;
-      if (objectUrlToRevoke) URL.revokeObjectURL(objectUrlToRevoke);
+      if (revoked) URL.revokeObjectURL(revoked);
     };
   }, [absUrl]);
 
   if (loading) return <p className="text-sm text-gray-600">Memuat PDF...</p>;
   if (err) return <p className="text-sm text-red-600">{err}</p>;
 
-  // Viewer paling “normal”: toolbar browser muncul, scroll enak, tidak render semua halaman manual
+  // ================= MOBILE =================
+  if (isMobile()) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3">
+        <p className="text-sm text-gray-600 text-center">
+          Preview PDF tidak didukung di mobile.
+        </p>
+        <a
+          href={src}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg"
+        >
+          Buka PDF
+        </a>
+      </div>
+    );
+  }
+
+  // ================= DESKTOP =================
   return (
     <iframe
       title="Preview PDF"
       src={src}
-      className="w-full h-[78vh] rounded-lg border"
+      className="w-full h-full rounded-lg border"
     />
   );
 }
