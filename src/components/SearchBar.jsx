@@ -3,9 +3,9 @@ import { Search } from "lucide-react";
 
 export default function SearchBar({ value, onChange }) {
   return (
-    <div className="relative mb-5">
+    <div className="relative mb-6">
       {/* Icon */}
-      <span className="absolute inset-y-0 left-4 flex items-center text-green-500 dark:text-green-400">
+      <span className="absolute inset-y-0 left-4 flex items-center text-green-600">
         <Search size={18} />
       </span>
 
@@ -18,18 +18,18 @@ export default function SearchBar({ value, onChange }) {
           w-full
           pl-11 pr-4 py-3
           text-sm md:text-base
-          rounded-2xl
-          border border-green-200 dark:border-green-700
-          bg-white/80 dark:bg-gray-900/70
-          backdrop-blur-md
-          shadow-md
-          text-gray-800 dark:text-white
+          rounded-xl
+          border border-green-200
+          bg-white
+          shadow-sm
+          text-gray-800
           placeholder:text-gray-400
           transition-all duration-200
           focus:outline-none
-          focus:ring-2 focus:ring-green-400
+          focus:ring-2 focus:ring-green-300
           focus:border-green-400
-          hover:shadow-lg
+          hover:border-green-300
+          hover:shadow-md
         "
       />
     </div>
