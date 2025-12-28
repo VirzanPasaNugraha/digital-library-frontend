@@ -143,7 +143,13 @@ export default function KelolaArsip() {
 
               {/* Aksi */}
               <div className="absolute flex space-x-2 transition opacity-0 top-3 right-3 group-hover:opacity-100">
-             
+                <button
+                  onClick={() => openEdit(file)}
+                  className="px-2 py-1 text-xs text-green-900 bg-yellow-400 rounded hover:bg-yellow-300"
+                  type="button"
+                >
+                  Edit
+                </button>
                 <button
                   onClick={() => handleDelete(file.id)}
                   className="px-2 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
