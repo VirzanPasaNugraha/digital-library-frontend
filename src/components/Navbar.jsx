@@ -72,14 +72,15 @@ export default function Navbar({ onLoginOpen, onRegisterOpen }) {
 
   return (
    <nav
-  className={`
-    fixed top-0 left-0 w-full z-50 transition-all duration-300
-    ${
-      isHome
-        ? "bg-black/30 backdrop-blur-md shadow-none"
-        : "bg-green-700 shadow"
-    }
-  `}
+className={`
+  fixed top-0 left-0 w-full z-50 transition-all duration-300
+  ${
+    isHome
+      ? "bg-black/30 shadow-none"
+      : "bg-green-700 shadow"
+  }
+`}
+
 >
 
 

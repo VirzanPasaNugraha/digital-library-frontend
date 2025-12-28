@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 import Navbar from "./components/Navbar";
@@ -29,135 +29,159 @@ import ProfilAdmin from "./pages/admin/Profil";
 import Profilpengaturan from "./pages/admin/Pengaturan";
 import AdminLayout from "./layouts/AdminLayout";
 
-export default function App() {
+/* ===================== CONTENT WRAPPER ===================== */
+function AppContent() {
+  const location = useLocation();
+
+  // HOME (hero) TIDAK boleh kena padding-top
+  const isHome = location.pathname === "/";
+
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
 
   return (
+    <div className="flex flex-col min-h-screen">
+      {/* NAVBAR */}
+      <Navbar
+        onLoginOpen={() => setLoginOpen(true)}
+        onRegisterOpen={() => setRegisterOpen(true)}
+      />
+
+      {/* AUTH MODAL */}
+      <AuthModal
+        open={loginOpen}
+        mode="login"
+        onClose={() => setLoginOpen(false)}
+      />
+      <AuthModal
+        open={registerOpen}
+        mode="register"
+        onClose={() => setRegisterOpen(false)}
+      />
+
+      {/* MAIN CONTENT */}
+      <main className={`flex-1 ${isHome ? "" : "pt-24"}`}>
+        <Routes>
+          {/* ===================== PUBLIK ===================== */}
+          <Route path="/" element={<Welcome />} />
+          <Route path="/beranda" element={<Beranda />} />
+          <Route path="/tentang" element={<Tentang />} />
+          <Route path="/bantuan" element={<Bantuan />} />
+          <Route path="/detail/:id" element={<DetailPage />} />
+
+          {/* ===================== MAHASISWA ===================== */}
+          <Route
+            path="/mahasiswa/dashboard"
+            element={
+              <MahasiswaLayout>
+                <MahasiswaDashboard />
+              </MahasiswaLayout>
+            }
+          />
+          <Route
+            path="/mahasiswa/upload"
+            element={
+              <MahasiswaLayout>
+                <UploadLaporan />
+              </MahasiswaLayout>
+            }
+          />
+          <Route
+            path="/mahasiswa/status"
+            element={
+              <MahasiswaLayout>
+                <Status />
+              </MahasiswaLayout>
+            }
+          />
+          <Route
+            path="/mahasiswa/profil"
+            element={
+              <MahasiswaLayout>
+                <ProfilMahasiswa />
+              </MahasiswaLayout>
+            }
+          />
+          <Route
+            path="/mahasiswa/pengaturan"
+            element={
+              <MahasiswaLayout>
+                <Pengaturan />
+              </MahasiswaLayout>
+            }
+          />
+
+          {/* ===================== ADMIN ===================== */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <AdminLayout>
+                <AdminDashboard />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/review"
+            element={
+              <AdminLayout>
+                <ReviewLaporan />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/upload"
+            element={
+              <AdminLayout>
+                <UploadManual />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/arsip"
+            element={
+              <AdminLayout>
+                <KelolaArsip />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/akun"
+            element={
+              <AdminLayout>
+                <KelolaAkun />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/profil"
+            element={
+              <AdminLayout>
+                <ProfilAdmin />
+              </AdminLayout>
+            }
+          />
+          <Route
+            path="/admin/pengaturan"
+            element={
+              <AdminLayout>
+                <Profilpengaturan />
+              </AdminLayout>
+            }
+          />
+        </Routes>
+      </main>
+
+      {/* FOOTER */}
+      <Footer />
+    </div>
+  );
+}
+
+/* ===================== ROOT APP ===================== */
+export default function App() {
+  return (
     <Router>
-      {/* WRAPPER UTAMA: bikin footer selalu di bawah */}
-      <div className="flex flex-col min-h-screen">
-        <Navbar
-          onLoginOpen={() => setLoginOpen(true)}
-          onRegisterOpen={() => setRegisterOpen(true)}
-        />
-        <AuthModal open={loginOpen} mode="login" onClose={() => setLoginOpen(false)} />
-        <AuthModal open={registerOpen} mode="register" onClose={() => setRegisterOpen(false)} />
-
-        {/* KONTEN UTAMA */}
-        <main className="flex-1 pt-24">
-          <Routes>
-            {/* Publik */}
-            <Route path="/" element={<Welcome />} />
-            <Route path="/beranda" element={<Beranda />} />
-            <Route path="/tentang" element={<Tentang />} />
-            <Route path="/bantuan" element={<Bantuan />} />
-            <Route path="/detail/:id" element={<DetailPage />} />
-
-            {/* Mahasiswa */}
-            <Route
-              path="/mahasiswa/dashboard"
-              element={
-                <MahasiswaLayout>
-                  <MahasiswaDashboard />
-                </MahasiswaLayout>
-              }
-            />
-            <Route
-              path="/mahasiswa/upload"
-              element={
-                <MahasiswaLayout>
-                  <UploadLaporan />
-                </MahasiswaLayout>
-              }
-            />
-            <Route
-              path="/mahasiswa/status"
-              element={
-                <MahasiswaLayout>
-                  <Status />
-                </MahasiswaLayout>
-              }
-            />
-            <Route
-              path="/mahasiswa/profil"
-              element={
-                <MahasiswaLayout>
-                  <ProfilMahasiswa />
-                </MahasiswaLayout>
-              }
-            />
-            <Route
-              path="/mahasiswa/pengaturan"
-              element={
-                <MahasiswaLayout>
-                  <Pengaturan />
-                </MahasiswaLayout>
-              }
-            />
-
-            {/* Admin */}
-            <Route
-              path="/admin/dashboard"
-              element={
-                <AdminLayout>
-                  <AdminDashboard />
-                </AdminLayout>
-              }
-            />
-            <Route
-              path="/admin/review"
-              element={
-                <AdminLayout>
-                  <ReviewLaporan />
-                </AdminLayout>
-              }
-            />
-            <Route
-              path="/admin/upload"
-              element={
-                <AdminLayout>
-                  <UploadManual />
-                </AdminLayout>
-              }
-            />
-            <Route
-              path="/admin/arsip"
-              element={
-                <AdminLayout>
-                  <KelolaArsip />
-                </AdminLayout>
-              }
-            />
-            <Route
-              path="/admin/akun"
-              element={
-                <AdminLayout>
-                  <KelolaAkun />
-                </AdminLayout>
-              }
-            />
-            <Route
-              path="/admin/profil"
-              element={
-                <AdminLayout>
-                  <ProfilAdmin />
-                </AdminLayout>
-              }
-            />
-            <Route
-              path="/admin/pengaturan"
-              element={
-                <AdminLayout>
-                  <Profilpengaturan />
-                </AdminLayout>
-              }
-            />
-          </Routes>
-        </main>
-
-        <Footer />
-      </div>
+      <AppContent />
     </Router>
   );
 }
