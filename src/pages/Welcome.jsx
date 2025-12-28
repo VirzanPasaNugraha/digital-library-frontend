@@ -15,27 +15,32 @@ export default function Welcome() {
     <>
       {/* HERO SECTION */}
       <div className="relative w-full min-h-[75vh] flex items-center justify-center text-center text-white overflow-hidden">
+        {/* Background Image + Blur */}
         <img
           src={BgFTI}
           alt="Library Background"
-          className="absolute inset-0 w-full h-full object-cover brightness-60"
+          className="absolute inset-0 w-full h-full object-cover brightness-70 blur-[1.5px]"
         />
 
+        {/* Overlay Hitam Transparan */}
+        <div className="absolute inset-0 bg-black/60" />
+
+        {/* Konten Teks */}
         <div className="relative z-10 px-6 py-24 md:py-32 max-w-3xl">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight drop-shadow-xl">
             {user?.role?.startsWith("admin")
-              ? `Selamat Datang, Admin`
+              ? "Selamat Datang, Admin"
               : "Selamat Datang di Digital Library FTI"}
           </h1>
 
-          <p className="text-lg md:text-xl mb-8 drop-shadow-md text-gray-100 leading-relaxed">
-            Jelajahi laporan Kerja Praktek dan Skripsi mahasiswa FTI UNSAP
-            dengan sistem repositori digital terintegrasi.
+          <p className="text-lg md:text-xl mb-8 text-gray-100 leading-relaxed">
+            Jelajahi laporan Kerja Praktek dan Skripsi mahasiswa FTI UNSAP dengan
+            sistem repositori digital yang mudah, cepat, dan terintegrasi.
           </p>
 
           <button
             onClick={handleJelajahi}
-            className="bg-green-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:bg-green-600 active:scale-[0.97] transition-all duration-300"
+            className="bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 active:scale-[0.97] transition-all duration-300"
           >
             Jelajahi Koleksi
           </button>
