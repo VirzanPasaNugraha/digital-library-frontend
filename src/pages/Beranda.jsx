@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
 import FileCard from "../components/FileCard";
-import { listDocuments } from "../api/documents"; // ✅ ganti ini (bukan documentsPublic)
+import { listDocuments } from "../api/documents";
 
 export default function Beranda() {
   const [search, setSearch] = useState("");
@@ -18,43 +18,33 @@ export default function Beranda() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // kalau filter berubah, reset ke halaman 1
+  // Reset ke halaman pertama jika filter berubah
   useEffect(() => {
     setPage(1);
   }, [filterProdi, filterTahun, filterTipe]);
 
+  // Parameter query API
   const params = useMemo(() => {
     const p = { page, limit };
-
     const q = search.trim();
-    if (q) p.q = q; // backend kamu support q/search
-
+    if (q) p.q = q;
     if (filterProdi) p.prodi = filterProdi;
-
-    if (filterTahun) {
-      // backend kamu Number(tahun) jadi aman kalau kita kirim angka
-      const n = Number(filterTahun);
-      if (!Number.isNaN(n)) p.tahun = n;
-    }
-
+    if (filterTahun && !Number.isNaN(Number(filterTahun)))
+      p.tahun = Number(filterTahun);
     if (filterTipe) p.tipe = filterTipe;
-
     return p;
   }, [search, filterProdi, filterTahun, filterTipe, page]);
 
+  // Ambil data dokumen
   const fetchDocuments = useCallback(async () => {
     setLoading(true);
     setMessage("");
-
     try {
       const res = await listDocuments(params);
       const list = res?.documents || [];
       const tp = res?.totalPages || 1;
-
       setDocs(list);
       setTotalPages(tp);
-
-      // kalau page kebesaran setelah filter/search, rapihin
       if (page > tp) setPage(tp);
     } catch (err) {
       setMessage(
@@ -69,28 +59,22 @@ export default function Beranda() {
     }
   }, [params, page]);
 
-  // Debounce search & fetch
+  // Debounce fetch saat search berubah
   useEffect(() => {
-    const t = setTimeout(() => {
-      fetchDocuments();
-    }, 300);
-
+    const t = setTimeout(() => fetchDocuments(), 300);
     return () => clearTimeout(t);
   }, [fetchDocuments]);
 
-  // ✅ Auto refresh kalau ada perubahan dokumen dari admin
-  // Catatan: ini hanya bekerja di TAB yang sama (karena event browser).
+  // Auto-refresh jika dokumen berubah
   useEffect(() => {
-    const handler = () => {
-      fetchDocuments(); // refetch pakai params saat ini
-    };
-
+    const handler = () => fetchDocuments();
     window.addEventListener("documents:changed", handler);
     return () => window.removeEventListener("documents:changed", handler);
   }, [fetchDocuments]);
 
   return (
-    <div className="max-w-6xl px-4 py-6 mx-auto">
+    <div className="max-w-6xl px-4 py-8 mx-auto space-y-6">
+      {/* Search dan Filter */}
       <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
 
       <FilterBar
@@ -102,40 +86,69 @@ export default function Beranda() {
         setFilterTipe={setFilterTipe}
       />
 
+      {/* Pesan Error */}
       {message && (
-        <div className="p-3 mt-3 text-sm text-red-700 border border-red-200 rounded-lg bg-red-50">
+        <div className="p-3 mt-3 text-sm text-center text-red-700 border border-red-200 rounded-lg bg-red-50 shadow-sm">
           {message}
         </div>
       )}
 
+      {/* Konten */}
       {loading ? (
-        <p className="mt-8 text-center text-gray-500">Memuat dokumen...</p>
+        <div className="flex flex-col items-center justify-center mt-12 text-gray-500">
+          <svg
+            className="w-6 h-6 mb-2 animate-spin text-green-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
+            ></path>
+          </svg>
+          Memuat dokumen...
+        </div>
       ) : docs.length === 0 ? (
-        <p className="mt-8 text-center text-gray-500">Dokumen tidak ditemukan.</p>
+        <p className="mt-10 text-center text-gray-500">
+          Tidak ada dokumen yang ditemukan.
+        </p>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Grid Dokumen */}
+          <div className="grid grid-cols-1 gap-6 gap-y-8 mt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {docs.map((file) => (
               <FileCard key={file.id || file._id} file={file} />
             ))}
           </div>
 
           {/* Pagination */}
-          <div className="flex items-center justify-center gap-3 mt-8">
+          <div className="flex items-center justify-center gap-4 mt-10">
             <button
-              className="px-4 py-2 border rounded hover:bg-gray-50 disabled:opacity-50"
+              className="px-4 py-2 border rounded hover:bg-gray-50 active:scale-[0.97] transition-all duration-150 disabled:opacity-50"
               disabled={page <= 1 || loading}
               onClick={() => setPage((p) => p - 1)}
             >
               Prev
             </button>
 
-            <span className="text-sm text-gray-600">
-              Halaman {page} / {totalPages}
+            <span className="text-sm font-medium text-gray-700">
+              Halaman{" "}
+              <span className="text-green-700 font-semibold">{page}</span> /{" "}
+              {totalPages}
             </span>
 
             <button
-              className="px-4 py-2 border rounded hover:bg-gray-50 disabled:opacity-50"
+              className="px-4 py-2 border rounded hover:bg-gray-50 active:scale-[0.97] transition-all duration-150 disabled:opacity-50"
               disabled={page >= totalPages || loading}
               onClick={() => setPage((p) => p + 1)}
             >

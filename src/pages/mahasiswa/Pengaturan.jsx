@@ -38,7 +38,7 @@ export default function Pengaturan() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6 pb-12 px-4">
       {/* Header */}
       <div>
         <h1 className="mb-2 text-3xl font-bold text-green-600">
@@ -52,7 +52,7 @@ export default function Pengaturan() {
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="p-6 space-y-6 bg-white shadow-lg rounded-xl"
+        className="p-6 space-y-6 bg-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl"
       >
         {/* Nama */}
         <FieldEditable
@@ -81,7 +81,7 @@ export default function Pengaturan() {
         <button
           type="submit"
           disabled={loading}
-          className="px-6 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-60"
+          className="px-6 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 active:scale-[0.98] disabled:opacity-60 transition-all duration-200 font-semibold"
         >
           {loading ? "Menyimpan..." : "Simpan Perubahan"}
         </button>
@@ -104,7 +104,7 @@ function FieldEditable({ label, value, onChange, loading }) {
         onChange={onChange}
         disabled={loading}
         required
-        className="w-full px-4 py-2 transition border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none disabled:bg-gray-100"
+        className="w-full px-4 py-2 transition-all duration-200 border rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none disabled:bg-gray-100"
       />
     </div>
   );

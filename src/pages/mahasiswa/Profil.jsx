@@ -23,7 +23,7 @@ export default function Profil() {
     );
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6 pb-12 px-4">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-green-600 mb-2">
@@ -35,7 +35,7 @@ export default function Profil() {
       </div>
 
       {/* Card Profil */}
-      <div className="bg-white shadow-lg rounded-xl p-6 space-y-6">
+      <div className="bg-white shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl p-6 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
           <Field label="Nama Lengkap" value={currentUser.name} />
           <Field label="NIM" value={currentUser.nim || "-"} />
@@ -52,13 +52,23 @@ export default function Profil() {
           <br />
           Jika terdapat kesalahan, silakan hubungi admin prodi.
         </div>
+
+        {/* Optional CTA (Edit Profil) */}
+        <div className="flex justify-end">
+          <button
+            type="button"
+            className="px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 active:scale-[0.98] transition-all duration-200"
+            onClick={() => alert('Fitur edit profil segera hadir!')}
+          >
+            Edit Profil
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
 /* ================= COMPONENT ================= */
-
 function Field({ label, value }) {
   return (
     <div>

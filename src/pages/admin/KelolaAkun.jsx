@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { adminListUsers, adminActivateUser, adminBanUser, adminDeleteUser } from "../../api/users";
+import {
+  adminListUsers,
+  adminActivateUser,
+  adminBanUser,
+  adminDeleteUser,
+} from "../../api/users";
 
 export default function KelolaAkun() {
   const [accounts, setAccounts] = useState([]);
-
   const [filterProdi, setFilterProdi] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -21,7 +24,11 @@ export default function KelolaAkun() {
       const res = await adminListUsers(params);
       setAccounts(res.users || []);
     } catch (err) {
-      setMessage(err?.userMessage || err?.response?.data?.message || "Gagal memuat akun mahasiswa.");
+      setMessage(
+        err?.userMessage ||
+          err?.response?.data?.message ||
+          "Gagal memuat akun mahasiswa."
+      );
       setAccounts([]);
     } finally {
       setLoading(false);
@@ -44,7 +51,11 @@ export default function KelolaAkun() {
       const { user } = await adminActivateUser(id);
       setAccounts((prev) => prev.map((u) => (u.id === id ? user : u)));
     } catch (err) {
-      setMessage(err?.userMessage || err?.response?.data?.message || "Gagal mengaktifkan akun.");
+      setMessage(
+        err?.userMessage ||
+          err?.response?.data?.message ||
+          "Gagal mengaktifkan akun."
+      );
     }
   };
 
@@ -55,7 +66,11 @@ export default function KelolaAkun() {
       await adminDeleteUser(id);
       setAccounts((prev) => prev.filter((u) => u.id !== id));
     } catch (err) {
-      setMessage(err?.userMessage || err?.response?.data?.message || "Gagal menghapus akun.");
+      setMessage(
+        err?.userMessage ||
+          err?.response?.data?.message ||
+          "Gagal menghapus akun."
+      );
     }
   };
 
@@ -68,20 +83,26 @@ export default function KelolaAkun() {
       const { user } = await adminBanUser(id, !target.is_banned);
       setAccounts((prev) => prev.map((u) => (u.id === id ? user : u)));
     } catch (err) {
-      setMessage(err?.userMessage || err?.response?.data?.message || "Gagal mengubah status ban.");
+      setMessage(
+        err?.userMessage ||
+          err?.response?.data?.message ||
+          "Gagal mengubah status ban."
+      );
     }
   };
 
   const filteredAccounts = useMemo(() => {
-    // backend sudah filter, tapi ini buat jaga-jaga kalau kamu pengen lokal filter juga
     return accounts;
   }, [accounts]);
 
   return (
     <div className="px-4 py-6 mx-auto space-y-6 max-w-7xl">
-      <h1 className="mb-2 text-3xl font-bold text-green-600">Kelola Akun Mahasiswa</h1>
+      <h1 className="mb-2 text-3xl font-bold text-green-600">
+        Kelola Akun Mahasiswa
+      </h1>
       <p className="mb-5 text-sm text-gray-600">
-        Tambah, ubah, atau hapus akun mahasiswa. Pastikan data mahasiswa selalu terupdate.
+        Tambah, ubah, atau hapus akun mahasiswa. Pastikan data mahasiswa selalu
+        terupdate.
       </p>
 
       {message && (
@@ -90,7 +111,8 @@ export default function KelolaAkun() {
         </div>
       )}
 
-      <div className="flex flex-wrap items-end gap-4">
+      {/* Filter Section */}
+      <div className="flex flex-col flex-wrap items-start gap-4 sm:flex-row sm:items-end">
         <FilterSelect
           label="Filter Prodi"
           value={filterProdi}
@@ -116,19 +138,22 @@ export default function KelolaAkun() {
         <button
           type="button"
           onClick={fetchUsers}
-          className="px-3 py-1 text-xs border rounded hover:bg-gray-50"
+          className="px-4 py-2 text-sm border rounded hover:bg-gray-50 disabled:opacity-60 transition"
           disabled={loading}
         >
           {loading ? "Memuat..." : "Refresh"}
         </button>
       </div>
 
+      {/* Table Section */}
       {loading ? (
         <p className="py-6 text-center text-gray-500">Memuat akun...</p>
       ) : filteredAccounts.length === 0 ? (
-        <p className="py-6 text-center text-gray-500">Tidak ada akun mahasiswa.</p>
+        <p className="py-6 text-center text-gray-400 italic">
+          Tidak ada akun mahasiswa yang sesuai filter.
+        </p>
       ) : (
-        <div className="overflow-x-auto shadow rounded-xl">
+        <div className="overflow-x-auto shadow rounded-xl scrollbar-thin scrollbar-thumb-gray-300">
           <table className="min-w-full bg-white">
             <thead className="text-white bg-green-700">
               <tr>
@@ -142,7 +167,10 @@ export default function KelolaAkun() {
             </thead>
             <tbody>
               {filteredAccounts.map((acc) => (
-                <tr key={acc.id} className="transition border-b hover:bg-green-50">
+                <tr
+                  key={acc.id}
+                  className="transition border-b hover:bg-green-50 hover:shadow-sm"
+                >
                   <td className="px-4 py-2">{acc.name}</td>
                   <td className="px-4 py-2">{acc.nim || "N/A"}</td>
                   <td className="px-4 py-2">{acc.prodi}</td>
@@ -156,18 +184,18 @@ export default function KelolaAkun() {
                       <span className="text-green-500">Aktif</span>
                     )}
                   </td>
-                  <td className="flex flex-wrap gap-2 px-4 py-2">
+                  <td className="flex flex-wrap gap-2 px-4 py-2 sm:flex-nowrap">
                     {!acc.isActive ? (
                       <>
                         <button
                           onClick={() => handleAktifkan(acc.id)}
-                          className="px-3 py-1 text-xs text-white bg-green-600 rounded hover:bg-green-700"
+                          className="px-3 py-1 text-xs text-white bg-green-600 rounded hover:bg-green-700 transition"
                         >
                           Aktifkan
                         </button>
                         <button
                           onClick={() => handleTolak(acc.id)}
-                          className="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600"
+                          className="px-3 py-1 text-xs text-white bg-red-500 rounded hover:bg-red-600 transition"
                         >
                           Tolak
                         </button>
@@ -175,7 +203,7 @@ export default function KelolaAkun() {
                     ) : (
                       <button
                         onClick={() => handleBanToggle(acc.id)}
-                        className={`px-3 py-1 rounded text-xs ${
+                        className={`px-3 py-1 rounded text-xs transition ${
                           acc.is_banned
                             ? "bg-yellow-400 text-green-900 hover:bg-yellow-300"
                             : "bg-red-500 text-white hover:bg-red-600"
@@ -198,9 +226,11 @@ export default function KelolaAkun() {
 function FilterSelect({ label, value, onChange, options }) {
   return (
     <div>
-      <label className="block mb-1 text-sm font-medium text-gray-700">{label}</label>
+      <label className="block mb-1 text-sm font-medium text-gray-700">
+        {label}
+      </label>
       <select
-        className="px-3 py-1 border rounded"
+        className="px-3 py-2 border rounded focus:ring focus:ring-green-200"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >

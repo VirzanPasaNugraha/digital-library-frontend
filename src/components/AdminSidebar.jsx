@@ -9,6 +9,17 @@ import {
   CogIcon,
 } from "lucide-react";
 
+/* ===================== PRODI MAPPING ===================== */
+const PRODI_LABEL = {
+  IF: "Informatika",
+  SI: "Sistem Informasi",
+};
+
+function formatProdi(value) {
+  return PRODI_LABEL[value] || value || "-";
+}
+
+/* ===================== MENU ===================== */
 const menuItems = [
   { name: "Dashboard", path: "/admin/dashboard", icon: <HomeIcon size={18} /> },
   { name: "Review Laporan", path: "/admin/review", icon: <FileTextIcon size={18} /> },
@@ -21,6 +32,12 @@ const menuItems = [
 
 export default function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
+
+  // 🔹 Contoh data admin login (biasanya dari auth / context)
+  const adminUser = {
+    nama: "Admin Fakultas",
+    prodi: "IF", // IF / SI dari backend
+  };
 
   const renderMenuItems = (closeMenu) =>
     menuItems.map((item) => (
@@ -41,13 +58,28 @@ export default function AdminSidebar() {
 
   return (
     <>
-      {/* Sidebar desktop */}
+      {/* ===================== SIDEBAR DESKTOP ===================== */}
       <aside className="hidden md:flex flex-col bg-white shadow-md rounded-xl p-5 space-y-6 fixed top-22 left-0 w-64 h-[calc(100vh-6rem-3rem)] z-40">
-        <div className="text-xl font-bold text-green-900 mb-8">Dashboard Admin</div>
-        <nav className="flex flex-col gap-2">{renderMenuItems(false)}</nav>
+        <div className="mb-6">
+          <div className="text-xl font-bold text-green-900">
+            Dashboard Admin
+          </div>
+
+          {/* 🔽 HAPUS BLOK INI JIKA TIDAK INGIN MENAMPILKAN PRODI */}
+          <div className="mt-1 text-sm text-gray-600">
+            Program Studi:{" "}
+            <b className="text-gray-800">
+              {formatProdi(adminUser.prodi)}
+            </b>
+          </div>
+        </div>
+
+        <nav className="flex flex-col gap-2">
+          {renderMenuItems(false)}
+        </nav>
       </aside>
 
-      {/* Mobile hamburger & off-canvas */}
+      {/* ===================== MOBILE ===================== */}
       <div className="md:hidden">
         {/* Hamburger */}
         <button
@@ -62,29 +94,38 @@ export default function AdminSidebar() {
           <div
             className="fixed inset-0 bg-black opacity-30 z-30"
             onClick={() => setIsOpen(false)}
-          ></div>
+          />
         )}
 
-        {/* Off-canvas menu */}
-      <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-white shadow-md p-5 pt-20 transform transition-transform duration-300 z-50 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        {/* Header teks + close */}
-        <div className="flex justify-between items-center mb-8 absolute top-5 left-5 right-5">
-          <span className="text-xl font-bold text-green-900">Dashboard Admin</span>
-          <button
-            onClick={() => setIsOpen(false)}
-            className="text-gray-700 font-bold text-lg"
-          >
-            ✕
-          </button>
-        </div>
+        {/* Off-canvas */}
+        <aside
+          className={`fixed top-0 left-0 h-full w-64 bg-white shadow-md p-5 pt-20 transform transition-transform duration-300 z-50 ${
+            isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          {/* Header */}
+          <div className="absolute top-5 left-5 right-5 flex justify-between items-center">
+            <div>
+              <div className="text-xl font-bold text-green-900">
+                Dashboard Admin
+              </div>
+              <div className="text-sm text-gray-600">
+                {formatProdi(adminUser.prodi)}
+              </div>
+            </div>
 
-        {/* Menu items */}
-        <nav className="flex flex-col gap-2 mt-1">{renderMenuItems(true)}</nav>
-      </aside>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-700 font-bold text-lg"
+            >
+              ✕
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-2 mt-6">
+            {renderMenuItems(true)}
+          </nav>
+        </aside>
       </div>
     </>
   );

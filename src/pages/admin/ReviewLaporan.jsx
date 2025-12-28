@@ -3,11 +3,8 @@ import PDFPreview from "../../components/PDFPreview";
 import { STATUS } from "../../constants/status";
 import { adminListDocuments, setDocumentStatus } from "../../api/documents";
 
-
 function withWatermark(url) {
   if (!url) return "";
-
-  // Cloudinary transform on-the-fly
   return url.replace(
     "/upload/",
     "/upload/fl_layer_apply,l_watermark,g_center,o_20,w_0.6/"
@@ -18,11 +15,9 @@ export default function ReviewLaporan() {
   const [files, setFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
   const [openPreview, setOpenPreview] = useState(false);
-
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // modal penolakan
   const [openReject, setOpenReject] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
 
@@ -38,7 +33,6 @@ export default function ReviewLaporan() {
       const { documents } = await adminListDocuments({ status: STATUS.PENDING });
       setFiles(documents || []);
 
-      // kalau selected sudah tidak ada (misal sudah diproses), reset
       if (selectedFile) {
         const still = (documents || []).find((d) => d.id === selectedFile.id);
         if (!still) setSelectedFile(null);
@@ -46,9 +40,7 @@ export default function ReviewLaporan() {
       }
     } catch (err) {
       setMessage(
-        err?.userMessage ||
-          err?.response?.data?.message ||
-          "Gagal memuat data."
+        err?.userMessage || err?.response?.data?.message || "Gagal memuat data."
       );
     } finally {
       setLoading(false);
@@ -65,24 +57,20 @@ export default function ReviewLaporan() {
     setLoading(true);
     try {
       await setDocumentStatus(fileId, STATUS.DITERIMA);
-      setFiles((prev) => prev.filter((f) => f.id !== fileId)); // hilang dari pending
+      setFiles((prev) => prev.filter((f) => f.id !== fileId));
       if (selectedFile?.id === fileId) setSelectedFile(null);
       setMessage("Dokumen diterima. (Jika email aktif, notifikasi akan dikirim.)");
     } catch (err) {
       setMessage(
-        err?.userMessage ||
-          err?.response?.data?.message ||
-          "Gagal menerima dokumen."
+        err?.userMessage || err?.response?.data?.message || "Gagal menerima dokumen."
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // versi final: alasan dari modal, bukan prompt
   const handleTolakSubmit = async () => {
     if (!selectedFile?.id) return;
-
     const alasan = rejectReason.trim();
     if (!alasan) {
       setMessage("Alasan penolakan wajib diisi.");
@@ -91,21 +79,16 @@ export default function ReviewLaporan() {
 
     setMessage("");
     setLoading(true);
-
     try {
       await setDocumentStatus(selectedFile.id, STATUS.DITOLAK, alasan);
-      setFiles((prev) => prev.filter((f) => f.id !== selectedFile.id)); // hilang dari pending
+      setFiles((prev) => prev.filter((f) => f.id !== selectedFile.id));
       setSelectedFile(null);
-
       setOpenReject(false);
       setRejectReason("");
-
       setMessage("Dokumen ditolak. (Jika email aktif, notifikasi akan dikirim.)");
     } catch (err) {
       setMessage(
-        err?.userMessage ||
-          err?.response?.data?.message ||
-          "Gagal menolak dokumen."
+        err?.userMessage || err?.response?.data?.message || "Gagal menolak dokumen."
       );
     } finally {
       setLoading(false);
@@ -126,20 +109,16 @@ export default function ReviewLaporan() {
     setRejectReason("");
     setOpenReject(true);
   };
-const previewUrl = useMemo(() => {
-  if (!selectedFile?.pdfUrl) return "";
 
-  // Saat masih PENDING → preview file asli
-  if (selectedFile.status === STATUS.PENDING) {
-    return selectedFile.pdfUrl;
-  }
-
-  // Saat DITERIMA → preview dengan watermark
-  return withWatermark(selectedFile.pdfUrl);
-}, [selectedFile]);
+  const previewUrl = useMemo(() => {
+    if (!selectedFile?.pdfUrl) return "";
+    return selectedFile.status === STATUS.PENDING
+      ? selectedFile.pdfUrl
+      : withWatermark(selectedFile.pdfUrl);
+  }, [selectedFile]);
 
   return (
-    <div className="px-4 py-6 mx-auto max-w-7xl">
+    <div className="px-4 py-6 pb-12 mx-auto max-w-7xl">
       <h1 className="mb-2 text-3xl font-bold text-green-600">Review Laporan</h1>
       <p className="mb-5 text-sm text-gray-600">
         Lihat dan verifikasi laporan KP/Skripsi mahasiswa. Pastikan dokumen sesuai pedoman sebelum diterima.
@@ -153,7 +132,7 @@ const previewUrl = useMemo(() => {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Daftar laporan */}
-        <div className="p-5 bg-white shadow rounded-xl">
+        <div className="p-5 bg-white shadow rounded-xl transition-all duration-200 hover:shadow-lg">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-green-700">
               Daftar Laporan Pending
@@ -161,7 +140,7 @@ const previewUrl = useMemo(() => {
             <button
               type="button"
               onClick={fetchPending}
-              className="px-3 py-1 text-xs border rounded hover:bg-gray-50 disabled:opacity-60"
+              className="px-3 py-1 text-xs border rounded hover:bg-gray-50 transition-all duration-200 disabled:opacity-60"
               disabled={loading}
             >
               {loading ? "Memuat..." : "Refresh"}
@@ -178,13 +157,13 @@ const previewUrl = useMemo(() => {
                 <li
                   key={file.id}
                   onClick={() => setSelectedFile(file)}
-                  className={`cursor-pointer border rounded p-3 hover:bg-green-50 ${
+                  className={`cursor-pointer border rounded p-3 transition-all duration-200 hover:bg-green-50 ${
                     selectedFile?.id === file.id
                       ? "bg-green-50 border-green-300"
-                      : ""
+                      : "border-gray-200"
                   }`}
                 >
-                  <p className="font-semibold">{file.judul}</p>
+                  <p className="font-semibold text-gray-800">{file.judul}</p>
                   <p className="text-sm text-gray-600">
                     {file.penulis} | {file.prodi} | {file.tahun}
                   </p>
@@ -195,7 +174,7 @@ const previewUrl = useMemo(() => {
         </div>
 
         {/* Detail laporan */}
-        <div className="p-5 bg-white shadow lg:col-span-2 rounded-xl">
+        <div className="p-5 bg-white shadow lg:col-span-2 rounded-xl transition-all duration-200 hover:shadow-lg">
           {selectedFile ? (
             <>
               <h2 className="mb-4 text-lg font-semibold text-green-700">
@@ -225,14 +204,14 @@ const previewUrl = useMemo(() => {
               <div className="flex flex-wrap gap-3">
                 <button
                   onClick={() => setOpenPreview(true)}
-                  className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700"
+                  className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700 active:scale-[0.98] transition-all duration-200"
                 >
                   Preview Dokumen
                 </button>
 
                 <button
                   onClick={() => handleTerima(selectedFile.id)}
-                  className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700 disabled:opacity-70"
+                  className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700 active:scale-[0.98] transition-all duration-200 disabled:opacity-70"
                   disabled={loading}
                 >
                   Terima
@@ -240,7 +219,7 @@ const previewUrl = useMemo(() => {
 
                 <button
                   onClick={openRejectModal}
-                  className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700 disabled:opacity-70"
+                  className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700 active:scale-[0.98] transition-all duration-200 disabled:opacity-70"
                   disabled={loading}
                 >
                   Tolak
@@ -255,11 +234,11 @@ const previewUrl = useMemo(() => {
 
       {/* Modal Preview */}
       {openPreview && selectedFile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-white w-full max-w-5xl h-[90vh] rounded-xl shadow-lg relative">
             <button
               onClick={() => setOpenPreview(false)}
-              className="absolute text-2xl top-3 right-4"
+              className="absolute text-2xl top-3 right-4 hover:text-red-600 transition-all duration-200"
             >
               ✕
             </button>
@@ -269,19 +248,19 @@ const previewUrl = useMemo(() => {
             </div>
 
             <div className="h-full p-4 overflow-auto">
-             <PDFPreview url={previewUrl} />
+              <PDFPreview url={previewUrl} />
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal Tolak (Alasan) */}
+      {/* Modal Tolak */}
       {openReject && selectedFile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="relative w-full max-w-md p-5 bg-white shadow-lg rounded-xl">
             <button
               onClick={() => setOpenReject(false)}
-              className="absolute text-2xl top-3 right-4"
+              className="absolute text-2xl top-3 right-4 hover:text-red-600 transition-all duration-200"
               disabled={loading}
             >
               ✕
@@ -306,7 +285,7 @@ const previewUrl = useMemo(() => {
               <button
                 type="button"
                 onClick={() => setOpenReject(false)}
-                className="px-4 py-2 border rounded hover:bg-gray-50 disabled:opacity-70"
+                className="px-4 py-2 border rounded hover:bg-gray-50 transition-all duration-200 disabled:opacity-70"
                 disabled={loading}
               >
                 Batal
@@ -314,7 +293,7 @@ const previewUrl = useMemo(() => {
               <button
                 type="button"
                 onClick={handleTolakSubmit}
-                className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700 disabled:opacity-70"
+                className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700 active:scale-[0.98] transition-all duration-200 disabled:opacity-70"
                 disabled={loading}
               >
                 {loading ? "Memproses..." : "Tolak & Kirim"}

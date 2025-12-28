@@ -5,13 +5,15 @@ import { useAuth } from "../../context/AuthContext";
 
 function StatCard({ title, value, badgeClass = "", icon }) {
   return (
-    <div className="flex items-center gap-4 p-5 bg-white border border-gray-100 shadow rounded-xl">
-      <div className={`flex items-center justify-center w-12 h-12 rounded-full ${badgeClass}`}>
-        <span className="text-lg">{icon}</span>
-      </div>
-      <div>
-        <p className="text-sm text-gray-600">{title}</p>
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
+    <div className="flex flex-col flex-1 justify-between p-5 bg-white border border-gray-100 shadow rounded-xl hover:shadow-lg transition duration-200 min-h-[120px]">
+      <div className="flex items-center gap-4">
+        <div className={`flex items-center justify-center w-12 h-12 rounded-full ${badgeClass}`}>
+          <span className="text-lg">{icon}</span>
+        </div>
+        <div>
+          <p className="text-sm text-gray-600">{title}</p>
+          <p className="text-2xl font-bold text-gray-900">{value}</p>
+        </div>
       </div>
     </div>
   );
@@ -31,8 +33,6 @@ export default function DashboardAdmin() {
   });
 
   const adminLabel = useMemo(() => {
-    // Sesuaikan ini dengan struktur user kamu.
-    // Di sistem kamu role admin biasanya: "admin-if" atau "admin-si"
     const role = user?.role || "";
     if (role === "admin-if") return "Admin IF";
     if (role === "admin-si") return "Admin SI";
@@ -46,15 +46,13 @@ export default function DashboardAdmin() {
     try {
       const baseParams = {
         page: 1,
-        limit: 1, // cukup 1 dokumen, kita cuma butuh "total"
+        limit: 1,
       };
       if (filterProdi) baseParams.prodi = filterProdi;
 
-      // total semua (dengan filter prodi kalau dipilih)
       const totalRes = await adminListDocuments({ ...baseParams });
       const total = Number(totalRes?.total || 0);
 
-      // hitung per status pakai Promise.all biar cepat
       const [pendingRes, diterimaRes, ditolakRes] = await Promise.all([
         adminListDocuments({ ...baseParams, status: STATUS.PENDING }),
         adminListDocuments({ ...baseParams, status: STATUS.DITERIMA }),
@@ -112,13 +110,14 @@ export default function DashboardAdmin() {
           type="button"
           onClick={fetchCounts}
           disabled={loading}
-          className="px-4 py-2 ml-auto text-sm border rounded hover:bg-gray-50 disabled:opacity-60"
+          className="px-4 py-2 ml-auto text-sm border rounded hover:bg-gray-50 disabled:opacity-60 transition"
         >
           {loading ? "Memuat..." : "Refresh"}
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Responsive grid improvement */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <StatCard
           title="Total Dokumen"
           value={counts.total}

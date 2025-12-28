@@ -22,7 +22,7 @@ export default function ProfilAdmin() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 pb-10 px-4 sm:px-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-green-600 mb-2">
@@ -34,7 +34,7 @@ export default function ProfilAdmin() {
       </div>
 
       {/* Card Profil */}
-      <div className="bg-white shadow-lg rounded-xl p-6 space-y-6">
+      <div className="bg-white shadow-lg rounded-xl p-6 space-y-6 transition-all duration-200 hover:shadow-xl">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
           {fields.map((f) => (
             <Field key={f.label} label={f.label} value={f.value} />
@@ -50,8 +50,11 @@ export default function ProfilAdmin() {
         {/* Tombol Edit */}
         <Link
           to="/admin/pengaturan"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm font-semibold -mb-2 inline-block"
+          className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 hover:shadow-md active:scale-[0.98] transition-all duration-200 text-sm font-semibold"
         >
+          <span role="img" aria-label="edit">
+            ⚙️
+          </span>
           Edit Profil
         </Link>
       </div>

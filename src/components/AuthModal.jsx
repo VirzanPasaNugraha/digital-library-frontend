@@ -2,7 +2,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 import { apiRegister } from "../api/auth";
 
-export default function AuthModal({ open, mode: initialMode = "login", onClose }) {
+export default function AuthModal({
+  open,
+  mode: initialMode = "login",
+  onClose,
+}) {
   const { login } = useAuth();
 
   const [mode, setMode] = useState(initialMode);
@@ -14,13 +18,14 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // ✅ Domain yang diizinkan
   const ALLOWED_DOMAIN = "student.unsap.ac.id";
 
-  // ✅ Validasi email khusus domain itu (case-insensitive)
   const isAllowedStudentEmail = useMemo(() => {
     const trimmed = (email || "").trim();
-    const re = new RegExp(`^[^\\s@]+@${ALLOWED_DOMAIN.replace(".", "\\.")}$`, "i");
+    const re = new RegExp(
+      `^[^\\s@]+@${ALLOWED_DOMAIN.replace(".", "\\.")}$`,
+      "i"
+    );
     return re.test(trimmed);
   }, [email]);
 
@@ -48,7 +53,10 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
 
     try {
       if (mode === "login") {
-        const result = await login({ email: email.trim(), password });
+        const result = await login({
+          email: email.trim(),
+          password,
+        });
 
         if (result?.success) {
           onClose();
@@ -56,8 +64,8 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
           setMessage(result?.message || "Login gagal");
         }
       } else {
-        // ✅ Cek domain sebelum register
         const normalizedEmail = email.trim().toLowerCase();
+
         if (!isAllowedStudentEmail) {
           setMessage(`Registrasi hanya untuk email @${ALLOWED_DOMAIN}`);
           return;
@@ -71,12 +79,18 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
           prodi,
         });
 
-        setMessage(res?.message || "Akun berhasil dibuat. Tunggu aktivasi admin.");
+        setMessage(
+          res?.message || "Akun berhasil dibuat. Tunggu aktivasi admin."
+        );
         setMode("login");
         setPassword("");
       }
     } catch (err) {
-      setMessage(err?.userMessage || err?.response?.data?.message || "Terjadi kesalahan");
+      setMessage(
+        err?.userMessage ||
+          err?.response?.data?.message ||
+          "Terjadi kesalahan"
+      );
     } finally {
       setLoading(false);
     }
@@ -86,11 +100,24 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
     loading || (mode === "register" && !isAllowedStudentEmail);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="relative w-full max-w-md p-6 mt-16 bg-white shadow-xl rounded-xl">
+    /* ===================== MODAL WRAPPER ===================== */
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 overflow-x-hidden">
+      {/* ===================== MODAL CARD ===================== */}
+      <div className="
+        relative
+        w-full
+        max-w-md
+        bg-white
+        p-6
+        rounded-xl
+        shadow-xl
+        max-h-[90vh]
+        overflow-y-auto
+      ">
+        {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute text-gray-500 right-3 top-3 hover:text-black"
+          className="absolute right-3 top-3 text-gray-500 hover:text-black"
         >
           ✕
         </button>
@@ -99,6 +126,7 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
           {mode === "login" ? "Masuk" : "Daftar"}
         </h2>
 
+        {/* ===================== FORM ===================== */}
         <form onSubmit={handleSubmit} className="space-y-3">
           {mode === "register" && (
             <>
@@ -110,6 +138,7 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
                 onChange={(e) => setName(e.target.value)}
                 required
               />
+
               <input
                 type="text"
                 placeholder="NIM (12 digit)"
@@ -118,6 +147,7 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
                 onChange={(e) => setNim(e.target.value)}
                 required
               />
+
               <select
                 className="w-full p-3 border rounded-lg"
                 value={prodi}
@@ -132,21 +162,34 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
 
           <input
             type="email"
-            placeholder={mode === "register" ? `NIM@${ALLOWED_DOMAIN}` : "Email"}
+            placeholder={
+              mode === "register"
+                ? `NIM@${ALLOWED_DOMAIN}`
+                : "Email"
+            }
             className="w-full p-3 border rounded-lg"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            // ✅ HTML validation tambahan (khusus register)
-            pattern={mode === "register" ? `^[^\\s@]+@${ALLOWED_DOMAIN.replace(".", "\\.")}$` : undefined}
-            title={mode === "register" ? `Gunakan email @${ALLOWED_DOMAIN}` : undefined}
+            pattern={
+              mode === "register"
+                ? `^[^\\s@]+@${ALLOWED_DOMAIN.replace(".", "\\.")}$`
+                : undefined
+            }
+            title={
+              mode === "register"
+                ? `Gunakan email @${ALLOWED_DOMAIN}`
+                : undefined
+            }
           />
 
-          {mode === "register" && email.trim() !== "" && !isAllowedStudentEmail && (
-            <p className="text-sm text-red-500">
-              Email harus berakhiran @{ALLOWED_DOMAIN}
-            </p>
-          )}
+          {mode === "register" &&
+            email.trim() !== "" &&
+            !isAllowedStudentEmail && (
+              <p className="text-sm text-red-500 break-words">
+                Email harus berakhiran @{ALLOWED_DOMAIN}
+              </p>
+            )}
 
           <input
             type="password"
@@ -159,8 +202,17 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
 
           <button
             type="submit"
-            className="w-full py-3 font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-70"
             disabled={disableSubmit}
+            className="
+              w-full
+              py-3
+              font-semibold
+              text-white
+              bg-green-600
+              rounded-lg
+              hover:bg-green-700
+              disabled:opacity-70
+            "
           >
             {loading
               ? mode === "login"
@@ -172,11 +224,20 @@ export default function AuthModal({ open, mode: initialMode = "login", onClose }
           </button>
         </form>
 
-        {message && <p className="mt-2 text-center text-red-500">{message}</p>}
+        {/* ===================== MESSAGE ===================== */}
+        {message && (
+          <p className="mt-3 text-center text-red-500 break-words">
+            {message}
+          </p>
+        )}
 
+        {/* ===================== SWITCH MODE ===================== */}
         <p className="mt-4 text-center text-gray-600">
-          {mode === "login" ? "Belum punya akun? " : "Sudah punya akun? "}
+          {mode === "login"
+            ? "Belum punya akun? "
+            : "Sudah punya akun? "}
           <button
+            type="button"
             onClick={() => {
               setMode(mode === "login" ? "register" : "login");
               setMessage("");

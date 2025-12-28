@@ -1,4 +1,3 @@
-// src/pages/Bantuan.jsx
 import React, { useState } from "react";
 import { FiChevronDown, FiChevronUp } from "react-icons/fi";
 
@@ -43,35 +42,42 @@ export default function Bantuan() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6 mt-10 space-y-6">
+    <div className="max-w-5xl mx-auto p-6 mt-10 space-y-8 pb-16">
+      {/* Header */}
       <h1 className="text-3xl md:text-4xl font-bold text-green-800 mb-4 text-center">
         FAQ – Pertanyaan yang Sering Diajukan
       </h1>
 
-      <p className="text-gray-700 text-lg text-center">
+      <p className="text-gray-700 text-lg text-center leading-relaxed max-w-3xl mx-auto">
         Halaman ini berisi panduan penggunaan sistem dan jawaban atas pertanyaan
         yang sering diajukan oleh pengguna Digital Library FTI.
       </p>
 
+      {/* FAQ Section */}
       <div className="space-y-4">
         {faqData.map((faq, idx) => (
           <div
             key={idx}
-            className="bg-white border rounded-xl shadow hover:shadow-md transition"
+            className="bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
           >
             <button
               onClick={() => toggle(idx)}
-              className="w-full flex justify-between items-center px-6 py-4 text-left text-green-700 font-semibold hover:bg-green-50 rounded-xl"
+              className="w-full flex justify-between items-center px-6 py-4 text-left text-green-700 font-semibold hover:bg-green-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500"
             >
               {faq.question}
-              {openIndex === idx ? <FiChevronUp /> : <FiChevronDown />}
+              {openIndex === idx ? <FiChevronUp size={20} /> : <FiChevronDown size={20} />}
             </button>
 
-            {openIndex === idx && (
-              <div className="px-6 pb-4 text-gray-700 text-sm">
+            {/* Smooth expand animation */}
+            <div
+              className={`overflow-hidden transition-all duration-300 ${
+                openIndex === idx ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="px-6 pb-4 text-gray-700 text-sm leading-relaxed">
                 {faq.answer}
               </div>
-            )}
+            </div>
           </div>
         ))}
       </div>
