@@ -5,6 +5,7 @@ import FileCard from "../components/FileCard";
 import { listDocuments } from "../api/documents";
 
 export default function Beranda() {
+  /* ===================== STATE ===================== */
   const [search, setSearch] = useState("");
   const [filterProdi, setFilterProdi] = useState("");
   const [filterTahun, setFilterTahun] = useState("");
@@ -18,34 +19,38 @@ export default function Beranda() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Reset ke halaman pertama jika filter berubah
+  /* ===================== RESET PAGE SAAT FILTER BERUBAH ===================== */
   useEffect(() => {
     setPage(1);
   }, [filterProdi, filterTahun, filterTipe]);
 
-  // Parameter query API
+  /* ===================== PARAMS API (STABLE) ===================== */
   const params = useMemo(() => {
     const p = { page, limit };
+
     const q = search.trim();
     if (q) p.q = q;
     if (filterProdi) p.prodi = filterProdi;
-    if (filterTahun && !Number.isNaN(Number(filterTahun)))
+    if (filterTahun && !Number.isNaN(Number(filterTahun))) {
       p.tahun = Number(filterTahun);
+    }
     if (filterTipe) p.tipe = filterTipe;
+
     return p;
   }, [search, filterProdi, filterTahun, filterTipe, page]);
 
-  // Ambil data dokumen
+  /* ===================== FETCH DATA (TANPA LOOP) ===================== */
   const fetchDocuments = useCallback(async () => {
     setLoading(true);
     setMessage("");
+
     try {
       const res = await listDocuments(params);
       const list = res?.documents || [];
       const tp = res?.totalPages || 1;
+
       setDocs(list);
       setTotalPages(tp);
-      if (page > tp) setPage(tp);
     } catch (err) {
       setMessage(
         err?.userMessage ||
@@ -57,26 +62,37 @@ export default function Beranda() {
     } finally {
       setLoading(false);
     }
-  }, [params, page]);
+  }, [params]);
 
-  // Debounce fetch saat search berubah
+  /* ===================== DEBOUNCE FETCH ===================== */
   useEffect(() => {
-    const t = setTimeout(() => fetchDocuments(), 300);
+    const t = setTimeout(() => {
+      fetchDocuments();
+    }, 300);
+
     return () => clearTimeout(t);
   }, [fetchDocuments]);
 
-  // Auto-refresh jika dokumen berubah
+  /* ===================== AUTO REFRESH EVENT ===================== */
   useEffect(() => {
     const handler = () => fetchDocuments();
     window.addEventListener("documents:changed", handler);
-    return () => window.removeEventListener("documents:changed", handler);
+
+    return () => {
+      window.removeEventListener("documents:changed", handler);
+    };
   }, [fetchDocuments]);
 
+  /* ===================== RENDER ===================== */
   return (
     <div className="max-w-6xl px-4 py-8 mx-auto space-y-6">
-      {/* Search dan Filter */}
-      <SearchBar value={search} onChange={(e) => setSearch(e.target.value)} />
+      {/* Search */}
+      <SearchBar
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
 
+      {/* Filter */}
       <FilterBar
         filterProdi={filterProdi}
         setFilterProdi={setFilterProdi}
@@ -86,14 +102,14 @@ export default function Beranda() {
         setFilterTipe={setFilterTipe}
       />
 
-      {/* Pesan Error */}
+      {/* Error Message */}
       {message && (
-        <div className="p-3 mt-3 text-sm text-center text-red-700 border border-red-200 rounded-lg bg-red-50 shadow-sm">
+        <div className="p-3 text-sm text-center text-red-700 border border-red-200 rounded-lg bg-red-50 shadow-sm">
           {message}
         </div>
       )}
 
-      {/* Konten */}
+      {/* Content */}
       {loading ? (
         <div className="flex flex-col items-center justify-center mt-12 text-gray-500">
           <svg
@@ -109,12 +125,12 @@ export default function Beranda() {
               r="10"
               stroke="currentColor"
               strokeWidth="4"
-            ></circle>
+            />
             <path
               className="opacity-75"
               fill="currentColor"
               d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"
-            ></path>
+            />
           </svg>
           Memuat dokumen...
         </div>
@@ -124,7 +140,7 @@ export default function Beranda() {
         </p>
       ) : (
         <>
-          {/* Grid Dokumen */}
+          {/* Grid */}
           <div className="grid grid-cols-1 gap-6 gap-y-8 mt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {docs.map((file) => (
               <FileCard key={file.id || file._id} file={file} />
@@ -134,7 +150,7 @@ export default function Beranda() {
           {/* Pagination */}
           <div className="flex items-center justify-center gap-4 mt-10">
             <button
-              className="px-4 py-2 border rounded hover:bg-gray-50 active:scale-[0.97] transition-all duration-150 disabled:opacity-50"
+              className="px-4 py-2 border rounded hover:bg-gray-50 transition-all disabled:opacity-50"
               disabled={page <= 1 || loading}
               onClick={() => setPage((p) => p - 1)}
             >
@@ -143,12 +159,12 @@ export default function Beranda() {
 
             <span className="text-sm font-medium text-gray-700">
               Halaman{" "}
-              <span className="text-green-700 font-semibold">{page}</span> /{" "}
+              <span className="font-semibold text-green-700">{page}</span> /{" "}
               {totalPages}
             </span>
 
             <button
-              className="px-4 py-2 border rounded hover:bg-gray-50 active:scale-[0.97] transition-all duration-150 disabled:opacity-50"
+              className="px-4 py-2 border rounded hover:bg-gray-50 transition-all disabled:opacity-50"
               disabled={page >= totalPages || loading}
               onClick={() => setPage((p) => p + 1)}
             >
