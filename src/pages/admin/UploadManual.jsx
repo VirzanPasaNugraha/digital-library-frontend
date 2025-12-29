@@ -158,6 +158,37 @@ const removePembimbing = (i) => {
     };
   }, [previewUrl]);
 
+  const addKeyword = () => {
+  const value = inputKeyword.trim();
+  if (!value) return;
+
+  if (value.length < 4 || value.length > 20) {
+    setErrors(p => ({ ...p, kataKunci: "Keyword 4–20 karakter" }));
+    return;
+  }
+
+  if (kataKunci.some(k => k.toLowerCase() === value.toLowerCase())) return;
+
+  setKataKunci([...kataKunci, value]);
+  setInputKeyword("");
+  setErrors(p => ({ ...p, kataKunci: undefined }));
+};
+const addPembimbing = () => {
+  const value = inputPembimbing.trim();
+  if (!value) return;
+
+  if (value.length < 5 || value.length > 30) {
+    setErrors(p => ({ ...p, pembimbing: "Nama pembimbing 5–30 karakter" }));
+    return;
+  }
+
+  if (pembimbing.some(p => p.toLowerCase() === value.toLowerCase())) return;
+
+  setPembimbing([...pembimbing, value]);
+  setInputPembimbing("");
+  setErrors(p => ({ ...p, pembimbing: undefined }));
+};
+
   /* ================= SUBMIT ================= */
 const handleSubmit = async (e) => {
   e.preventDefault();
@@ -180,33 +211,18 @@ const handleSubmit = async (e) => {
     formData.append("keywords", JSON.stringify(kataKunci));
     formData.append("file", filePdf);
 
-    const res = await api.post("/documents", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    // ⬅️ INI YANG SEHARUSNYA DIPANGGIL
+    const res = await uploadDocument(formData);
 
-    setMessage(res?.data?.message || "Upload berhasil. Dokumen masuk ke Review.");
+    setMessage(res?.data?.message || "Upload berhasil");
 
-    // reset state
-    setJudul("");
-    setPenulis("");
-    setNim("");
-    setProdi("");
-    setTipe("Skripsi");
-    setTahun("");
-    setPembimbing([]);
-    setInputPembimbing("");
-    setKataKunci([]);
-    setInputKeyword("");
-    setAbstrak("");
-    setFilePdf(null);
-    setPreviewUrl("");
-    setErrors({});
   } catch (err) {
-    setMessage(err?.response?.data?.message || "Upload gagal.");
+    setMessage(err?.response?.data?.message || "Upload gagal");
   } finally {
     setLoading(false);
   }
 };
+
 
 
 
@@ -279,6 +295,7 @@ const handleSubmit = async (e) => {
   inputValue={inputPembimbing}
   onInputChange={setInputPembimbing}
   onKeyDown={handlePembimbingKeyDown}
+  onAdd={addPembimbing}
   onRemove={removePembimbing}
   error={errors.pembimbing}
 />
@@ -291,6 +308,7 @@ const handleSubmit = async (e) => {
   inputValue={inputKeyword}
   onInputChange={setInputKeyword}
   onKeyDown={handleKeywordKeyDown}
+   onAdd={addKeyword}  
   onRemove={removeKeyword}
   error={errors.kataKunci}
 />
@@ -400,32 +418,57 @@ function TagInput({
   inputValue,
   onInputChange,
   onKeyDown,
+  onAdd,
   onRemove,
   error,
 }) {
   return (
-    <div>
-      <label className="text-sm font-medium">{label}</label>
 
-      <div
-        className={`flex flex-wrap gap-2 p-3 border rounded ${
-          error ? "border-red-500" : "border-gray-300"
-        }`}
+      <div>
+  <label className="text-sm font-medium">{label}</label>
+
+  <div
+    className={`flex flex-wrap items-center gap-2 p-3 border rounded ${
+      error ? "border-red-500" : "border-gray-300"
+    }`}
+  >
+    {values.map((v, i) => (
+      <span
+        key={i}
+        className="flex items-center gap-1 px-2 py-1 text-xs bg-green-100 rounded"
       >
-        {values.map((v, i) => (
-          <span key={i} className="px-2 py-1 text-xs bg-green-100 rounded">
-            {v}
-            <button type="button" onClick={() => onRemove(i)}>×</button>
-          </span>
-        ))}
+        {v}
+        <button
+          type="button"
+          onClick={() => onRemove(i)}
+          className="text-red-500"
+        >
+          ×
+        </button>
+      </span>
+    ))}
 
-        <input
-          value={inputValue}
-          onChange={(e) => onInputChange(e.target.value)}
-          onKeyDown={onKeyDown}
-          className="flex-1 outline-none"
-        />
-      </div>
+    {/* INPUT */}
+    <input
+      value={inputValue}
+      onChange={(e) => onInputChange(e.target.value)}
+      onKeyDown={onKeyDown}   // desktop only
+      enterKeyHint="done"
+      inputMode="text"
+      className="flex-1 min-w-[120px] outline-none"
+      placeholder="Ketik lalu klik Tambah"
+    />
+
+    {/* TOMBOL MOBILE */}
+    <button
+      type="button"
+      onClick={onAdd}
+      className="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded"
+    >
+      Tambah
+    </button>
+  </div>
+
 
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>

@@ -60,24 +60,20 @@ export default function UploadLaporan() {
   };
 
   /* ================= KEYWORD ================= */
-  const handleKeywordKeyDown = (e) => {
-    if (e.key !== "Enter") return;
+ const handleKeywordKeyDown = (e) => {
+  if (e.key === "Enter") {
     e.preventDefault();
+    addKeyword();
+  }
+};
 
-    const value = inputKeyword.trim();
-    if (!value) return;
+const handlePembimbingKeyDown = (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    addPembimbing();
+  }
+};
 
-    if (value.length < 4 || value.length > 20) {
-      setErrors((p) => ({ ...p, kataKunci: "Keyword 4–20 karakter" }));
-      return;
-    }
-
-    if (kataKunci.some((k) => k.toLowerCase() === value.toLowerCase())) return;
-
-    setKataKunci([...kataKunci, value]);
-    setInputKeyword("");
-    setErrors((p) => ({ ...p, kataKunci: undefined }));
-  };
 
   const removeKeyword = (i) => {
     const updated = kataKunci.filter((_, idx) => idx !== i);
@@ -86,28 +82,23 @@ export default function UploadLaporan() {
       setErrors((p) => ({ ...p, kataKunci: undefined }));
   };
 
-  /* ================= PEMBIMBING ================= */
-  const handlePembimbingKeyDown = (e) => {
-    if (e.key !== "Enter") return;
-    e.preventDefault();
+ const addKeyword = () => {
+  const v = inputKeyword.trim();
+  if (!v) return;
+  if (kataKunci.some(k => k.toLowerCase() === v.toLowerCase())) return;
+  setKataKunci([...kataKunci, v]);
+  setInputKeyword("");
+};
 
-    const value = inputPembimbing.trim();
-    if (!value) return;
+const addPembimbing = () => {
+  const v = inputPembimbing.trim();
+  if (!v) return;
+  if (pembimbing.some(p => p.toLowerCase() === v.toLowerCase())) return;
+  setPembimbing([...pembimbing, v]);
+  setInputPembimbing("");
+};
 
-    if (value.length < 5 || value.length > 30) {
-      setErrors((p) => ({
-        ...p,
-        pembimbing: "Nama pembimbing 5–30 karakter",
-      }));
-      return;
-    }
 
-    if (pembimbing.some((p) => p.toLowerCase() === value.toLowerCase())) return;
-
-    setPembimbing([...pembimbing, value]);
-    setInputPembimbing("");
-    setErrors((p) => ({ ...p, pembimbing: undefined }));
-  };
 
   const removePembimbing = (i) => {
     setPembimbing(pembimbing.filter((_, idx) => idx !== i));
@@ -156,7 +147,7 @@ export default function UploadLaporan() {
       formData.append("keywords", JSON.stringify(kataKunci));
       formData.append("file", file);
 
-      const res = await api.post("/documents", formData, {
+      const res = await api.post("/api/documents", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
@@ -227,6 +218,7 @@ export default function UploadLaporan() {
           input={inputPembimbing}
           setInput={setInputPembimbing}
           onKeyDown={handlePembimbingKeyDown}
+          onAdd={addPembimbing}
           onRemove={removePembimbing}
           error={errors.pembimbing}
         />
@@ -237,6 +229,7 @@ export default function UploadLaporan() {
           input={inputKeyword}
           setInput={setInputKeyword}
           onKeyDown={handleKeywordKeyDown}
+          onAdd={addKeyword} 
           onRemove={removeKeyword}
           error={errors.kataKunci}
         />
@@ -321,7 +314,7 @@ function TextAreaField({ label, value, onChange }) {
   );
 }
 
-function ChipInput({ label, values, input, setInput, onKeyDown, onRemove, error }) {
+function ChipInput({ label, values, input, setInput, onKeyDown, onAdd, onRemove, error }) {
   return (
     <div>
       <label className="block mb-1 text-sm font-medium">{label}</label>
@@ -350,12 +343,20 @@ function ChipInput({ label, values, input, setInput, onKeyDown, onRemove, error 
         ))}
 
         <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={onKeyDown}
-          className="flex-1 min-w-[200px] outline-none"
-          placeholder="Tekan Enter"
+           value={input}
+    onChange={(e) => setInput(e.target.value)}
+    onKeyDown={onKeyDown}
+    enterKeyHint="done"
+    className="flex-1 min-w-[200px] outline-none"
+    placeholder="Ketik lalu klik Tambah"
         />
+        <button
+    type="button"
+    onClick={onAdd}
+    className="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded"
+  >
+    Tambah
+  </button>
       </div>
 
       {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
