@@ -1,11 +1,22 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"), // ✅ supaya import "@/..." bisa jalan
+    },
+  },
   server: {
     proxy: {
-      "/api": "http://localhost:4000"
-    }
-  }
+      // ✅ Semua request frontend ke /api diteruskan ke backend Express kamu di Vercel
+      "/api": {
+        target: "https://library-backend-2gr1.vercel.app",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
 });
