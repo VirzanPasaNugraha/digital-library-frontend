@@ -18,6 +18,27 @@ export async function listDocuments(params = {}) {
   return data;
 }
 
+/** Admin: upload dokumen manual */
+export async function adminUploadDocument(payload) {
+  const fd = new FormData();
+
+  Object.entries(payload || {}).forEach(([k, v]) => {
+    if (k === "file") {
+      if (v) fd.append("file", v);
+      return;
+    }
+    appendSmart(fd, k, v);
+  });
+
+  const { data } = await api.post(
+    "/api/documents/_admin/upload",
+    fd,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+
+  return data;
+}
+
 export async function getDocument(id) {
   const { data } = await api.get(`/api/documents/${id}`);
   return data;

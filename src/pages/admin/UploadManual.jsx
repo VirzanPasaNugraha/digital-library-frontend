@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { uploadDocument } from "../../api/documents";
+import { adminUploadDocument } from "../../api/documents";
 
 export default function UploadManual() {
   const [judul, setJudul] = useState("");
@@ -59,6 +59,7 @@ const RULES = {
   setInputKeyword("");
   setErrors(p => ({ ...p, kataKunci: undefined }));
 };
+
 
 const removeKeyword = (i) => {
   const updated = kataKunci.filter((_, idx) => idx !== i);
@@ -199,7 +200,7 @@ const handleSubmit = async (e) => {
   try {
     setLoading(true);
 
-    const payload = {
+    const res = await adminUploadDocument({
       judul,
       penulis,
       nim,
@@ -209,18 +210,19 @@ const handleSubmit = async (e) => {
       abstrak,
       pembimbing,
       keywords: kataKunci,
-      file: filePdf, // 👈 PENTING
-    };
+      file: filePdf,
+    });
 
-    const res = await uploadDocument(payload);
-
-    setMessage(res?.message || "Upload berhasil");
+    setMessage(res?.message || "Upload admin berhasil");
   } catch (err) {
-    setMessage(err?.userMessage || "Upload gagal");
+    setMessage(
+      err?.response?.data?.message || "Upload admin gagal"
+    );
   } finally {
     setLoading(false);
   }
 };
+
 
 
 
