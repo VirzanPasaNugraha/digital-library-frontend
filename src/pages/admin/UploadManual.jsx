@@ -199,25 +199,24 @@ const handleSubmit = async (e) => {
   try {
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append("judul", judul);
-    formData.append("penulis", penulis);
-    formData.append("nim", nim);
-    formData.append("prodi", prodi);
-    formData.append("tipe", tipe);
-    formData.append("tahun", tahun);
-    formData.append("abstrak", abstrak);
-    formData.append("pembimbing", JSON.stringify(pembimbing));
-    formData.append("keywords", JSON.stringify(kataKunci));
-    formData.append("file", filePdf);
+    const payload = {
+      judul,
+      penulis,
+      nim,
+      prodi,
+      tipe,
+      tahun,
+      abstrak,
+      pembimbing,
+      keywords: kataKunci,
+      file: filePdf, // 👈 PENTING
+    };
 
-    // ⬅️ INI YANG SEHARUSNYA DIPANGGIL
-    const res = await uploadDocument(formData);
+    const res = await uploadDocument(payload);
 
-    setMessage(res?.data?.message || "Upload berhasil");
-
+    setMessage(res?.message || "Upload berhasil");
   } catch (err) {
-    setMessage(err?.response?.data?.message || "Upload gagal");
+    setMessage(err?.userMessage || "Upload gagal");
   } finally {
     setLoading(false);
   }

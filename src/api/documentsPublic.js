@@ -1,7 +1,10 @@
 import { api } from "./http";
 
-// LIST publik
-// Endpoint: GET /api/documents
+/**
+ * LIST / SEARCH publik
+ * - Tanpa keyword  -> GET /api/documents
+ * - Dengan keyword -> GET /api/documents/search (SEMANTIC)
+ */
 export async function listPublicDocuments(params = {}) {
   const {
     page = 1,
@@ -13,16 +16,27 @@ export async function listPublicDocuments(params = {}) {
     tahun,
   } = params;
 
-  // backend membaca param "search"
   const keyword = (search ?? q ?? "").toString().trim();
 
+  // ===============================
+  // 🔥 SEMANTIC SEARCH
+  // ===============================
+  if (keyword) {
+    const { data } = await api.get("/api/documents/search", {
+      params: { q: keyword },
+    });
+    return data;
+  }
+
+  // ===============================
+  // 🔁 LIST BIASA
+  // ===============================
   const query = {
     page,
     limit,
     prodi,
     tipe,
     tahun,
-    ...(keyword ? { search: keyword } : {}),
   };
 
   const { data } = await api.get("/api/documents", { params: query });
@@ -30,7 +44,6 @@ export async function listPublicDocuments(params = {}) {
 }
 
 // DETAIL publik
-// Endpoint: GET /api/documents/:id
 export async function getPublicDocumentById(id) {
   const { data } = await api.get(`/api/documents/${id}`);
   return data;

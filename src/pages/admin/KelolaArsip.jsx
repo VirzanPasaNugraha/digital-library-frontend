@@ -264,8 +264,8 @@ function EditMetadataModal({ open, doc, onClose, onSave }) {
         tipe,
         tahun: Number(tahun),
         // kirim array (backend kamu sudah ada parser untuk array/json/string, tinggal patch-nya support)
-        pembimbing,
-        keywords,
+        pembimbing: JSON.stringify(pembimbing),
+  keywords: JSON.stringify(keywords),
         abstrak: abstrak || "",
       };
 

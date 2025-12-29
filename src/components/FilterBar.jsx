@@ -3,13 +3,14 @@ import { SlidersHorizontal, RotateCcw } from "lucide-react";
 import { PROGRAMS } from "../constants/programs";
 
 export default function FilterBar({
-  filterProdi,
-  setFilterProdi,
-  filterTahun,
-  setFilterTahun,
-  filterTipe,
-  setFilterTipe,
+  filterProdi = "",
+  setFilterProdi = () => {},
+  filterTahun = "",
+  setFilterTahun = () => {},
+  filterTipe = "",
+  setFilterTipe = () => {},
 }) {
+
   const [showFilters, setShowFilters] = useState(false);
 
   const handleReset = () => {

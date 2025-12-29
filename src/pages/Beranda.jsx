@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
 import FileCard from "../components/FileCard";
-import { listDocuments } from "../api/documents";
+import { listPublicDocuments } from "../api/documentsPublic";
 
 export default function Beranda() {
   /* ===================== STATE ===================== */
@@ -45,7 +45,7 @@ export default function Beranda() {
     setMessage("");
 
     try {
-      const res = await listDocuments(params);
+     const res = await listPublicDocuments(params);
       const list = res?.documents || [];
       const tp = res?.totalPages || 1;
 
