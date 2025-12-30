@@ -40,20 +40,11 @@ const menuItems = [
 export default function MahasiswaSidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
-  /* ===================== LOCK SCROLL (MOBILE) ===================== */
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => (document.body.style.overflow = "");
   }, [isOpen]);
 
-  /* ===================== RENDER MENU ===================== */
   const renderMenuItems = (closeOnClick = false) =>
     menuItems.map((item) => (
       <NavLink
@@ -61,13 +52,11 @@ export default function MahasiswaSidebar() {
         to={item.path}
         onClick={() => closeOnClick && setIsOpen(false)}
         className={({ isActive }) =>
-          `
-          flex items-center gap-3 px-4 py-2 rounded-lg
-          font-medium text-gray-700
-          hover:bg-green-50 hover:text-green-700
-          transition
-          ${isActive ? "bg-green-100 text-green-700" : ""}
-        `
+          `flex items-center gap-3 px-4 py-2 rounded-lg
+           font-medium text-gray-700
+           hover:bg-green-50 hover:text-green-700
+           transition
+           ${isActive ? "bg-green-100 text-green-700" : ""}`
         }
       >
         {item.icon}
@@ -77,19 +66,19 @@ export default function MahasiswaSidebar() {
 
   return (
     <>
-      {/* ===================== SIDEBAR DESKTOP ===================== */}
+      {/* ================= DESKTOP ================= */}
       <aside
         className="
           hidden md:flex flex-col
           bg-white shadow-md rounded-xl
           p-5 space-y-6
-          fixed top-22 left-0
+          fixed top-16 left-0   /* 🔧 FIX */
           w-64
-          h-[calc(100vh-6rem-3rem)]
+          h-[calc(100vh-64px)] /* 🔧 FIX */
           z-40
         "
       >
-        <div className="text-xl font-bold text-green-900 mb-8 break-words">
+        <div className="text-xl font-bold text-green-900 mb-6 break-words">
           Dashboard Mahasiswa
         </div>
 
@@ -98,13 +87,14 @@ export default function MahasiswaSidebar() {
         </nav>
       </aside>
 
-      {/* ===================== MOBILE ===================== */}
+      {/* ================= MOBILE ================= */}
       <div className="md:hidden">
-        {/* Hamburger */}
+        {/* Hamburger FIXED */}
         <button
           onClick={() => setIsOpen(true)}
           className="
-            p-2 m-2
+            fixed top-20 left-4 z-50   /* 🔧 FIX */
+            p-2
             text-white bg-green-700
             rounded-md shadow
           "
@@ -112,15 +102,13 @@ export default function MahasiswaSidebar() {
           ☰
         </button>
 
-        {/* Overlay */}
         {isOpen && (
           <div
-            className="fixed inset-0 bg-black/30 z-30"
+            className="fixed inset-0 bg-black/30 z-40"
             onClick={() => setIsOpen(false)}
           />
         )}
 
-        {/* Off-canvas Sidebar */}
         <aside
           className={`
             fixed top-0 left-0
@@ -132,7 +120,6 @@ export default function MahasiswaSidebar() {
             ${isOpen ? "translate-x-0" : "-translate-x-full"}
           `}
         >
-          {/* Header */}
           <div className="absolute top-5 left-5 right-5 flex justify-between items-center">
             <span className="text-xl font-bold text-green-900 break-words">
               Dashboard Mahasiswa
@@ -145,8 +132,7 @@ export default function MahasiswaSidebar() {
             </button>
           </div>
 
-          {/* Menu */}
-          <nav className="flex flex-col gap-2 mt-4">
+          <nav className="flex flex-col gap-2 mt-6">
             {renderMenuItems(true)}
           </nav>
         </aside>
@@ -154,3 +140,4 @@ export default function MahasiswaSidebar() {
     </>
   );
 }
+

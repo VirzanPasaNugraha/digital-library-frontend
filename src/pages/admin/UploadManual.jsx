@@ -179,6 +179,21 @@ const removePembimbing = (i) => {
   setInputKeyword("");
   setErrors(p => ({ ...p, kataKunci: undefined }));
 };
+
+
+useEffect(() => {
+  if (openPreview) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
+
+  return () => {
+    document.body.style.overflow = "";
+  };
+}, [openPreview]);
+
+
 const addPembimbing = () => {
   const value = inputPembimbing.trim();
   if (!value) return;
@@ -220,7 +235,6 @@ const handleSubmit = async (e) => {
 
 // ⬇️ SAMAKAN DENGAN UploadLaporan
 setUploadedPdfUrl(res.document.pdfUrl);
-setOpenPreview(true);
 setPreviewUrl("");
 setFilePdf(null);
 
@@ -239,10 +253,13 @@ setFilePdf(null);
 
 
   return (
-    <div>
-      <h1 className="mb-3 text-3xl font-bold text-green-600">
+  <div className="w-full min-h-screen px-4 pb-24 md:px-8">
+    <div className="max-w-5xl mx-auto">
+
+      <h1 className="mb-3 text-2xl md:text-3xl font-bold text-green-600">
         Unggah Laporan Admin
       </h1>
+
 
       {message && (
         <div className="p-3 mb-4 text-sm text-red-700 border rounded bg-red-50">
@@ -377,17 +394,18 @@ setFilePdf(null);
 {openPreview && uploadedPdfUrl && (
   <div className="fixed inset-0 z-50 bg-black/60 flex">
     <div
-      className="
-        bg-white
-        w-full h-full
-        md:max-w-5xl md:h-[90vh]
-        md:rounded-xl
-        shadow-lg
-        flex flex-col
-        relative
-        m-auto
-      "
-    >
+  className="
+    bg-white
+    w-full h-full
+    md:max-w-5xl md:h-[90vh]
+    md:rounded-xl
+    shadow-lg
+    flex flex-col
+    relative
+    md:m-auto
+  "
+>
+
       <button
         onClick={() => setOpenPreview(false)}
         className="absolute top-3 right-4 text-2xl text-gray-600"
@@ -407,7 +425,9 @@ setFilePdf(null);
 )}
 
     </div>
-  );
+  </div>
+);
+
 }
 
 /* ================== COMPONENTS ================== */
@@ -514,7 +534,7 @@ function TagInput({
       onKeyDown={onKeyDown}   // desktop only
       enterKeyHint="done"
       inputMode="text"
-      className="flex-1 min-w-[120px] outline-none"
+     className="flex-1 min-w-[100px] outline-none text-sm"
       placeholder="Ketik lalu klik Tambah"
     />
 
@@ -522,7 +542,8 @@ function TagInput({
     <button
       type="button"
       onClick={onAdd}
-      className="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded"
+     className="px-2 py-1 text-xs font-medium text-white bg-green-600 rounded whitespace-nowrap"
+
     >
       Tambah
     </button>

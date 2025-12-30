@@ -60,7 +60,7 @@ function AppContent() {
       />
 
       {/* MAIN CONTENT */}
-      <main className={`flex-1 ${isHome ? "" : "pt-24"}`}>
+      <main className={`flex-1 ${isHome ? "" : "pt-20"}`}>
         <Routes>
           {/* ===================== PUBLIK ===================== */}
           <Route path="/" element={<Welcome />} />

@@ -108,6 +108,14 @@ const addPembimbing = () => {
     setPembimbing(pembimbing.filter((_, idx) => idx !== i));
   };
 
+  useEffect(() => {
+  document.body.style.overflow = openPreview ? "hidden" : "";
+  return () => {
+    document.body.style.overflow = "";
+  };
+}, [openPreview]);
+
+
   /* ================= FILE ================= */
  const handleFileChange = (e) => {
   const f = e.target.files?.[0];
@@ -157,7 +165,7 @@ const addPembimbing = () => {
 
 // ambil pdfUrl dari backend
 setUploadedPdfUrl(res.data.document.pdfUrl);
-setOpenPreview(true);
+
 
       setMessage(res?.data?.message || "Upload berhasil. Menunggu review admin.");
 
@@ -190,7 +198,8 @@ setOpenPreview(true);
     }`;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+   <div className="w-full min-h-screen px-4 pb-24 md:px-8">
+  <div className="max-w-5xl mx-auto space-y-6">
       <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white shadow-lg rounded-xl">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <InputField label="Judul Laporan" value={judul} onChange={setJudul} error={errors.judul} cls={inputClass} />
@@ -300,7 +309,7 @@ setOpenPreview(true);
         shadow-lg
         flex flex-col
         relative
-        m-auto
+         md:m-auto
       "
     >
       <button
@@ -321,6 +330,7 @@ setOpenPreview(true);
   </div>
 )}
 
+    </div>
     </div>
   );
 }
@@ -398,7 +408,7 @@ function ChipInput({ label, values, input, setInput, onKeyDown, onAdd, onRemove,
     onChange={(e) => setInput(e.target.value)}
     onKeyDown={onKeyDown}
     enterKeyHint="done"
-    className="flex-1 min-w-[200px] outline-none"
+   className="flex-1 min-w-[100px] outline-none text-sm"
     placeholder="Ketik lalu klik Tambah"
         />
         <button

@@ -11,13 +11,15 @@ export default function AdminLayout({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 -mt-7">
+    <div className="flex min-h-screen bg-gray-50">
       {/* Sidebar */}
       <AdminSidebar />
 
       {/* Konten utama */}
-      <div className="flex-1 md:ml-64 p-6">
-        {children}
+      <div className="flex flex-col flex-1 md:ml-64 overflow-x-hidden">
+        <main className="flex-1 p-4 md:p-6">
+          {children}
+        </main>
       </div>
     </div>
   );
