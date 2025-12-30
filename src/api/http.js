@@ -4,7 +4,7 @@ const baseURL =
   import.meta.env.VITE_API_BASE_URL ||
   (import.meta.env.MODE === "development"
     ? "http://localhost:4000"
-    : "https://digital-library-backend-3k5k.vercel.app");
+    : "https://digital-library-backend-ndwn.vercel.app");
 
 export const api = axios.create({
   baseURL,
