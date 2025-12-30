@@ -8,7 +8,6 @@ const baseURL =
 
 export const api = axios.create({
   baseURL,
-  withCredentials: true,
 });
 
 // Request interceptor: attach token
