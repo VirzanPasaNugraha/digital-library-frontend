@@ -163,7 +163,10 @@ export default function ReviewLaporan() {
                       : "border-gray-200"
                   }`}
                 >
-                  <p className="font-semibold text-gray-800">{file.judul}</p>
+                <p className="font-semibold text-gray-800 break-words whitespace-normal">
+  {file.judul}
+</p>
+
                   <p className="text-sm text-gray-600">
                     {file.penulis} | {file.prodi} | {file.tahun}
                   </p>
@@ -177,12 +180,13 @@ export default function ReviewLaporan() {
         <div className="p-5 bg-white shadow lg:col-span-2 rounded-xl transition-all duration-200 hover:shadow-lg">
           {selectedFile ? (
             <>
-              <h2 className="mb-4 text-lg font-semibold text-green-700">
-                {selectedFile.judul}
-              </h2>
+             <h2 className="mb-4 text-lg font-semibold text-green-700 break-words">
+  {selectedFile.judul}
+</h2>
+
 
               <div className="grid grid-cols-1 gap-4 mb-4 text-sm md:grid-cols-2">
-                <div className="space-y-1">
+              <div className="space-y-1 break-words">
                   <p><b>Penulis:</b> {selectedFile.penulis}</p>
                   <p><b>NIM:</b> {selectedFile.nim}</p>
                   <p><b>Program Studi:</b> {selectedFile.prodi}</p>
@@ -192,13 +196,19 @@ export default function ReviewLaporan() {
                 <div className="space-y-1">
                 <p><b>Status:</b> {STATUS_LABEL[selectedFile.status]}</p>
                   <p><b>Tanggal Upload:</b> {formatTanggal(selectedFile.createdAt)}</p>
-                  <p><b>Keywords:</b> {(selectedFile.keywords || []).join(", ")}</p>
+<p className="break-words whitespace-normal">
+  <b>Keywords:</b> {(selectedFile.keywords || []).join(", ")}
+</p>
+
                 </div>
               </div>
 
               <div className="mb-4">
                 <h3 className="mb-1 font-semibold text-green-700">Abstrak</h3>
-                <p className="text-sm text-gray-600">{selectedFile.abstrak || "-"}</p>
+<p className="text-sm text-gray-600 break-words whitespace-pre-line leading-relaxed">
+  {selectedFile.abstrak || "-"}
+</p>
+
               </div>
 
               <div className="flex flex-wrap gap-3">
