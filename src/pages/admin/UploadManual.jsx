@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
 import { adminUploadDocument } from "../../api/documents";
+import PDFPreview from "../components/PDFPreview";
+
 
 export default function UploadManual() {
   const [judul, setJudul] = useState("");
   const [penulis, setPenulis] = useState("");
   const [errors, setErrors] = useState({});
+  const [openPreview, setOpenPreview] = useState(false);
+const [uploadedPdfUrl, setUploadedPdfUrl] = useState("");
   const [nim, setNim] = useState("");
   const [prodi, setProdi] = useState("");
   const [tipe, setTipe] = useState("Skripsi");
@@ -200,18 +204,24 @@ const handleSubmit = async (e) => {
   try {
     setLoading(true);
 
-    const res = await adminUploadDocument({
-      judul,
-      penulis,
-      nim,
-      prodi,
-      tipe,
-      tahun,
-      abstrak,
-      pembimbing,
-      keywords: kataKunci,
-      file: filePdf,
-    });
+   const res = await adminUploadDocument({
+  judul,
+  penulis,
+  nim,
+  prodi,
+  tipe,
+  tahun,
+  abstrak,
+  pembimbing,
+  keywords: kataKunci,
+  file: filePdf,
+});
+
+// ⬇️ SAMAKAN DENGAN UploadLaporan
+setUploadedPdfUrl(res.document.pdfUrl);
+setOpenPreview(true);
+setPreviewUrl("");
+setFilePdf(null);
 
     setMessage(res?.message || "Upload admin berhasil");
   } catch (err) {
@@ -336,9 +346,12 @@ const handleSubmit = async (e) => {
 </div>
 
 
-        {previewUrl && (
-          <iframe src={previewUrl} className="w-full h-64 border rounded" />
-        )}
+       {previewUrl && (
+  <div className="mt-4">
+    <PDFPreview url={previewUrl} />
+  </div>
+)}
+
 
         <button
           type="submit"
@@ -348,6 +361,50 @@ const handleSubmit = async (e) => {
           {loading ? "Uploading..." : "Upload"}
         </button>
       </form>
+      {/* ===== TOMBOL LIHAT DOKUMEN ===== */}
+{uploadedPdfUrl && (
+  <button
+    type="button"
+    onClick={() => setOpenPreview(true)}
+    className="w-full mt-4 py-3 font-semibold text-white bg-green-600 rounded-lg"
+  >
+    Lihat Dokumen
+  </button>
+)}
+
+{/* ===== MODAL PREVIEW (SAMA DENGAN DetailPage) ===== */}
+{openPreview && uploadedPdfUrl && (
+  <div className="fixed inset-0 z-50 bg-black/60 flex">
+    <div
+      className="
+        bg-white
+        w-full h-full
+        md:max-w-5xl md:h-[90vh]
+        md:rounded-xl
+        shadow-lg
+        flex flex-col
+        relative
+        m-auto
+      "
+    >
+      <button
+        onClick={() => setOpenPreview(false)}
+        className="absolute top-3 right-4 text-2xl text-gray-600"
+      >
+        ✕
+      </button>
+
+      <div className="p-4 font-semibold text-green-700 border-b">
+        Lihat Dokumen
+      </div>
+
+      <div className="flex-1 overflow-hidden p-2 md:p-4">
+        <PDFPreview url={uploadedPdfUrl} />
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
