@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import PDFPreview from "../../components/PDFPreview";
-import { STATUS } from "../../constants/status";
+import { STATUS, STATUS_LABEL } from "../../constants/status";
 import { adminListDocuments, setDocumentStatus } from "../../api/documents";
 
 function withWatermark(url) {
@@ -190,7 +190,7 @@ export default function ReviewLaporan() {
                   <p><b>Jenis:</b> {selectedFile.tipe}</p>
                 </div>
                 <div className="space-y-1">
-                  <p><b>Status:</b> {selectedFile.status}</p>
+                <p><b>Status:</b> {STATUS_LABEL[selectedFile.status]}</p>
                   <p><b>Tanggal Upload:</b> {formatTanggal(selectedFile.createdAt)}</p>
                   <p><b>Keywords:</b> {(selectedFile.keywords || []).join(", ")}</p>
                 </div>

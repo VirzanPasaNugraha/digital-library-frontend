@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { STATUS_LABEL } from "../constants/status";
 
 const PRODI_LABEL = {
   IF: "Informatika",
@@ -24,15 +25,28 @@ export default function FileCard({ file }) {
     >
       {/* Content */}
       <div className="flex-1">
-        <div className="flex items-center justify-between mb-3">
-          <span className="inline-block px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
-            {file?.tipe || "-"}
-          </span>
+       <div className="flex items-center justify-between mb-3">
+  <span className="inline-block px-3 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
+    {file?.tipe || "-"}
+  </span>
 
-          <span className="text-xs font-semibold text-gray-500">
-            {file?.tahun || "-"}
-          </span>
-        </div>
+  <div className="flex flex-col items-end gap-1">
+    <span className="text-xs font-semibold text-gray-500">
+      {file?.tahun || "-"}
+    </span>
+
+    <span
+      className={`text-[10px] font-bold px-2 py-0.5 rounded-full
+        ${file?.status === "PENDING" ? "bg-yellow-100 text-yellow-700" : ""}
+        ${file?.status === "DITERIMA" ? "bg-green-100 text-green-700" : ""}
+        ${file?.status === "DITOLAK" ? "bg-red-100 text-red-700" : ""}
+      `}
+    >
+      {STATUS_LABEL[file?.status] || file?.status}
+    </span>
+  </div>
+</div>
+
 
         <h3
           className="
