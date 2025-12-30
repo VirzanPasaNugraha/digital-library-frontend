@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { adminUploadDocument } from "../../api/documents";
-import PDFPreview from "../components/PDFPreview";
+import PDFPreview from "../../components/PDFPreview";
+
 
 
 export default function UploadManual() {

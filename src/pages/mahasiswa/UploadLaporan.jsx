@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { api } from "../../api/http";
-import PDFPreview from "../components/PDFPreview";
+import PDFPreview from "../../components/PDFPreview";
 
 
 export default function UploadLaporan() {
