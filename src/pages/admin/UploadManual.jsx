@@ -253,7 +253,7 @@ setFilePdf(null);
 
 
   return (
-  <div className="w-full min-h-screen px-4 pb-24 md:px-8">
+ <div className="w-full min-h-screen px-4 pb-24 pt-24 md:pt-0 md:px-8">
     <div className="max-w-5xl mx-auto">
 
       <h1 className="mb-3 text-2xl md:text-3xl font-bold text-green-600">
