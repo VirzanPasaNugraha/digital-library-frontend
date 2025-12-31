@@ -63,7 +63,8 @@ export default function DashboardMahasiswa() {
   }, [myFiles]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 pb-12 space-y-6">
+   <div className="max-w-7xl mx-auto px-4 pb-12 pt-24 md:pt-0 space-y-6">
+
       {/* Header */}
       <DashboardHeader title="Dashboard Mahasiswa" user={user} />
 

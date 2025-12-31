@@ -92,12 +92,13 @@ export default function MahasiswaSidebar() {
         {/* Hamburger FIXED */}
         <button
           onClick={() => setIsOpen(true)}
-          className="
-            fixed top-20 left-4 z-50   /* 🔧 FIX */
-            p-2
-            text-white bg-green-700
-            rounded-md shadow
-          "
+className="
+  fixed top-20 left-4 z-40
+  p-2
+  text-white bg-green-700
+  rounded-md shadow
+"
+
         >
           ☰
         </button>
@@ -116,7 +117,7 @@ export default function MahasiswaSidebar() {
             bg-white shadow-md
             p-5 pt-20
             transform transition-transform duration-300
-            z-50
+            z-40
             ${isOpen ? "translate-x-0" : "-translate-x-full"}
           `}
         >

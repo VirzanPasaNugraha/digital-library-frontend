@@ -200,6 +200,15 @@ setUploadedPdfUrl(res.data.document.pdfUrl);
   return (
  <div className="w-full min-h-screen px-4 pb-24 pt-24 md:pt-0 md:px-8">
   <div className="max-w-5xl mx-auto space-y-6">
+    {/* ===== HEADER HALAMAN ===== */}
+<div>
+  <h1 className="text-2xl md:text-3xl font-bold text-green-600">
+    Upload Laporan Mahasiswa
+  </h1>
+  <p className="mt-1 text-sm text-gray-600">
+    Unggah laporan skripsi atau kerja praktik sesuai ketentuan
+  </p>
+</div>
       <form onSubmit={handleSubmit} className="p-6 space-y-4 bg-white shadow-lg rounded-xl">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <InputField label="Judul Laporan" value={judul} onChange={setJudul} error={errors.judul} cls={inputClass} />
