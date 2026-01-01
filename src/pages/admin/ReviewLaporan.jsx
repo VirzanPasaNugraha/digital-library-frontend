@@ -118,7 +118,7 @@ export default function ReviewLaporan() {
   }, [selectedFile]);
 
   return (
-    <div className="px-4 py-6 pb-12 mx-auto max-w-7xl">
+   <div className="max-w-7xl mx-auto space-y-6 px-4 pt-24 md:pt-0 pb-12">
       <h1 className="mb-2 text-3xl font-bold text-green-600">Review Laporan</h1>
       <p className="mb-5 text-sm text-gray-600">
         Lihat dan verifikasi laporan KP/Skripsi mahasiswa. Pastikan dokumen sesuai pedoman sebelum diterima.

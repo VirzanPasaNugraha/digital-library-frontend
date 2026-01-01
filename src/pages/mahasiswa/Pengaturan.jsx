@@ -38,7 +38,8 @@ export default function Pengaturan() {
   };
 
   return (
-  <div className="max-w-3xl mx-auto space-y-6 pb-12 px-4 pt-24 md:pt-0">
+ <div className="max-w-7xl mx-auto space-y-6 px-4 pt-24 md:pt-0 pb-12">
+
       {/* Header */}
       <div>
         <h1 className="mb-2 text-3xl font-bold text-green-600">

@@ -96,7 +96,7 @@ export default function KelolaAkun() {
   }, [accounts]);
 
   return (
-    <div className="px-4 py-6 mx-auto space-y-6 max-w-7xl">
+  <div className="max-w-7xl mx-auto space-y-6 px-4 pt-24 md:pt-0 pb-12">
       <h1 className="mb-2 text-3xl font-bold text-green-600">
         Kelola Akun Mahasiswa
       </h1>

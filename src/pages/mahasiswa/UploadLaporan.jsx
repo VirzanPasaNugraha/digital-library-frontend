@@ -198,7 +198,8 @@ setUploadedPdfUrl(res.data.document.pdfUrl);
     }`;
 
   return (
- <div className="w-full min-h-screen px-4 pb-24 pt-24 md:pt-0 md:px-8">
+<div className="max-w-7xl mx-auto space-y-6 px-4 pt-24 md:pt-0 pb-12">
+
   <div className="max-w-5xl mx-auto space-y-6">
     {/* ===== HEADER HALAMAN ===== */}
 <div>
