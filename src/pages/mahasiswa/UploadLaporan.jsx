@@ -71,7 +71,7 @@ const RULES = {
       e.tahun = "Tahun harus 4 digit";
 
  if (kataKunci.length < RULES.KEYWORD_MIN || kataKunci.length > RULES.KEYWORD_MAX)
-  e.kataKunci = "Minimal 1 dan maksimal 20 kata kunci";
+  e.kataKunci = "Minimal 1 dan maksimal 40 kata kunci";
 
   if (abstrak.length > RULES.ABSTRAK_MAX)
   e.abstrak = "Abstrak maksimal 800 karakter";
@@ -115,7 +115,7 @@ const handlePembimbingKeyDown = (e) => {
   ) {
     setErrors(p => ({
       ...p,
-      kataKunci: "Keyword 4–40 karakter",
+      kataKunci: "Keyword 4–20 karakter",
     }));
     return;
   }
