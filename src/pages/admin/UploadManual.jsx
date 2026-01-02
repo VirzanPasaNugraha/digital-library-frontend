@@ -113,6 +113,8 @@ const validateForm = () => {
 
   if (!penulis || penulis.length > 80)
     e.penulis = "Penulis wajib diisi (maks 80 karakter)";
+  if (!abstrak || abstrak.length > RULES.ABSTRAK_MAX)
+  e.abstrak = "Abstrak wajib diisi (maks 5000 karakter)";
 
   if (nim.length < 10 || nim.length > 15)
     e.nim = "NIM minimal 10 dan maksimal 15 karakter";
@@ -176,7 +178,11 @@ const removePembimbing = (i) => {
   const value = inputKeyword.trim();
   if (!value) return;
 
-  if (value.length < 4 || value.length > 20) {
+if (
+  value.length < RULES.KEYWORD_CHAR_MIN ||
+  value.length > RULES.KEYWORD_CHAR_MAX
+)
+ {
     setErrors(p => ({ ...p, kataKunci: "Keyword 4–20 karakter" }));
     return;
   }
