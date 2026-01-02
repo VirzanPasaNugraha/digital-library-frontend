@@ -14,15 +14,7 @@ import {
  * - Edit metadata via modal scrollable (bukan prompt)
  * - Hapus dokumen
  */
-export default function KelolaArsip() {
-  const [files, setFiles] = useState([]);
-  const [filterProdi, setFilterProdi] = useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-
-  const [editOpen, setEditOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
 
 const RULES = {
   JUDUL_MIN: 10,
@@ -43,6 +35,18 @@ const RULES = {
   PEMBIMBING_CHAR_MIN: 5,
   PEMBIMBING_CHAR_MAX: 80,
 };
+
+export default function KelolaArsip() {
+  const [files, setFiles] = useState([]);
+  const [filterProdi, setFilterProdi] = useState("");
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+
+
 
 
 
@@ -379,7 +383,12 @@ function EditMetadataModal({ open, doc, onClose, onSave }) {
 
             {/* Tag input: pembimbing bisa lebih dari 1 */}
             <TagInput label="Pembimbing" values={pembimbing} setValues={setPembimbing} />
-            <TagInput label="Kata Kunci" values={keywords} setValues={setKeywords} />
+           <TagInput
+  label="Kata Kunci"
+  values={keywords}
+  setValues={setKeywords}
+/>
+
           </div>
 
         <TextAreaField
@@ -480,12 +489,14 @@ function TagInput({ label, values, setValues }) {
   const v = (val || "").trim();
   if (!v) return;
 
-  if (label === "Kata Kunci") {
-    if (
-      v.length < RULES.KEYWORD_CHAR_MIN ||
-      v.length > RULES.KEYWORD_CHAR_MAX
-    ) return;
-  }
+ if (
+  v.length < RULES.KEYWORD_CHAR_MIN ||
+  v.length > RULES.KEYWORD_CHAR_MAX
+) {
+  setError("Kata kunci harus 4–20 karakter");
+  return;
+}
+
 
   if (label === "Pembimbing") {
     if (
