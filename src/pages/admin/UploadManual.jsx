@@ -119,8 +119,12 @@ const validateForm = () => {
   if (!tahun || tahun.length !== 4)
     e.tahun = "Tahun harus 4 digit";
 
-  if (kataKunci.length < 1 || kataKunci.length > 20)
-    e.kataKunci = "Minimal 1 dan maksimal 20 kata kunci";
+ if (
+  kataKunci.length < RULES.KEYWORD_MIN ||
+  kataKunci.length > RULES.KEYWORD_MAX
+)
+  e.kataKunci = "Minimal 1 dan maksimal 5 kata kunci";
+
 
   if (!filePdf)
     e.file = "File PDF wajib diupload";
