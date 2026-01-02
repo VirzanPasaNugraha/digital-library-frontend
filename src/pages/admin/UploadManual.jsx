@@ -34,13 +34,16 @@ const [uploadedPdfUrl, setUploadedPdfUrl] = useState("");
   // ===== VALIDATION RULES (UPLOAD MANUAL) =====
 const RULES = {
   JUDUL_MIN: 10,
-  JUDUL_MAX: 160,
+  JUDUL_MAX: 200,
   PENULIS_MAX: 80,
   NIM_MIN: 10,
   NIM_MAX: 15,
-  ABSTRAK_MAX: 800,
+  ABSTRAK_MAX: 5000,
   KEYWORD_MIN: 1,
   KEYWORD_MAX: 5,
+  KEYWORD_CHAR_MIN: 4,
+KEYWORD_CHAR_MAX: 20,
+
 };
 
 
@@ -54,9 +57,10 @@ const RULES = {
   if (!value) return;
 
   if (value.length < 4 || value.length > 20) {
-    setErrors(p => ({ ...p, kataKunci: "Keyword 4–20 karakter" }));
-    return;
-  }
+  setErrors(p => ({ ...p, kataKunci: "Keyword 4–20 karakter" }));
+  return;
+}
+
 
   if (kataKunci.some(k => k.toLowerCase() === value.toLowerCase())) return;
 
@@ -84,10 +88,10 @@ const handlePembimbingKeyDown = (e) => {
   const value = inputPembimbing.trim();
   if (!value) return;
 
-  if (value.length < 5 || value.length > 30) {
+  if (value.length < 5 || value.length > 80) {
     setErrors((p) => ({
       ...p,
-      pembimbing: "Nama pembimbing 5–30 karakter",
+      pembimbing: "Nama pembimbing 5–80 karakter",
     }));
     return;
   }
@@ -104,8 +108,8 @@ const handlePembimbingKeyDown = (e) => {
 const validateForm = () => {
   const e = {};
 
-  if (judul.length < 10 || judul.length > 160)
-    e.judul = "Judul minimal 10 dan maksimal 160 karakter";
+  if (judul.length < 10 || judul.length > 200)
+    e.judul = "Judul minimal 10 dan maksimal 200 karakter";
 
   if (!penulis || penulis.length > 80)
     e.penulis = "Penulis wajib diisi (maks 80 karakter)";
@@ -202,8 +206,8 @@ const addPembimbing = () => {
   const value = inputPembimbing.trim();
   if (!value) return;
 
-  if (value.length < 5 || value.length > 30) {
-    setErrors(p => ({ ...p, pembimbing: "Nama pembimbing 5–30 karakter" }));
+  if (value.length < 5 || value.length > 80) {
+    setErrors(p => ({ ...p, pembimbing: "Nama pembimbing 5–80 karakter" }));
     return;
   }
 
@@ -281,7 +285,7 @@ setFilePdf(null);
   label="Judul"
   value={judul}
   onChange={setJudul}
-  error={errors.judul} minLength={10} maxLength={160} />
+  error={errors.judul} minLength={10} maxLength={200} />
          <InputField
   label="Penulis"
   value={penulis}

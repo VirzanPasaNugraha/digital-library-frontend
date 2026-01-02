@@ -24,20 +24,26 @@ export default function KelolaArsip() {
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  const RULES = {
+const RULES = {
   JUDUL_MIN: 10,
-  JUDUL_MAX: 160,
+  JUDUL_MAX: 200,
+
   PENULIS_MAX: 80,
+
   NIM_MIN: 10,
   NIM_MAX: 15,
-  ABSTRAK_MAX: 800,
+
+  ABSTRAK_MAX: 5000,
+
   KEYWORD_MIN: 1,
   KEYWORD_MAX: 5,
   KEYWORD_CHAR_MIN: 4,
   KEYWORD_CHAR_MAX: 20,
+
   PEMBIMBING_CHAR_MIN: 5,
-  PEMBIMBING_CHAR_MAX: 30,
+  PEMBIMBING_CHAR_MAX: 80,
 };
+
 
 
   const fetchArsip = async () => {
@@ -251,7 +257,7 @@ function EditMetadataModal({ open, doc, onClose, onSave }) {
 
  const validate = () => {
   if (judul.length < RULES.JUDUL_MIN || judul.length > RULES.JUDUL_MAX)
-    return "Judul minimal 10 dan maksimal 160 karakter.";
+    return "Judul minimal 10 dan maksimal 200 karakter.";
 
   if (!penulis || penulis.length > RULES.PENULIS_MAX)
     return "Penulis wajib diisi (maks 80 karakter).";
@@ -275,7 +281,7 @@ function EditMetadataModal({ open, doc, onClose, onSave }) {
     return "Minimal 1 dan maksimal 5 kata kunci.";
 
   if (abstrak.length > RULES.ABSTRAK_MAX)
-    return "Abstrak maksimal 800 karakter.";
+    return "Abstrak maksimal 5000 karakter.";
 
   return "";
 };

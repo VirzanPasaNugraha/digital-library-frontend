@@ -30,17 +30,17 @@ const [uploadedPdfUrl, setUploadedPdfUrl] = useState("");
 
 const RULES = {
   JUDUL_MIN: 10,
-  JUDUL_MAX: 160,
+  JUDUL_MAX: 200,
   PENULIS_MAX: 80,
   NIM_MIN: 10,
   NIM_MAX: 15,
-  ABSTRAK_MAX: 800,
+  ABSTRAK_MAX: 5000,
   KEYWORD_MIN: 1,
   KEYWORD_MAX: 5,
   KEYWORD_CHAR_MIN: 4,
   KEYWORD_CHAR_MAX: 20,
   PEMBIMBING_CHAR_MIN: 5,
-  PEMBIMBING_CHAR_MAX: 30,
+  PEMBIMBING_CHAR_MAX: 80,
 };
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const RULES = {
     const e = {};
 
    if (judul.length < RULES.JUDUL_MIN || judul.length > RULES.JUDUL_MAX)
-  e.judul = "Judul minimal 10 dan maksimal 160 karakter";
+  e.judul = "Judul minimal 10 dan maksimal 200 karakter";
 
 
    if (!penulis || penulis.length > RULES.PENULIS_MAX)
@@ -74,7 +74,7 @@ const RULES = {
   e.kataKunci = "Minimal 1 dan maksimal 5 kata kunci";
 
   if (abstrak.length > RULES.ABSTRAK_MAX)
-  e.abstrak = "Abstrak maksimal 800 karakter";
+  e.abstrak = "Abstrak maksimal 5000 karakter";
 
     if (!file) e.file = "File PDF wajib diupload";
 
@@ -138,7 +138,7 @@ const addPembimbing = () => {
   ) {
     setErrors(p => ({
       ...p,
-      pembimbing: "Nama pembimbing 5–30 karakter",
+      pembimbing: "Nama pembimbing 5–80 karakter",
     }));
     return;
   }
