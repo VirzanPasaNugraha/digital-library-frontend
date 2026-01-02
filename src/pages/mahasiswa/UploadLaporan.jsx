@@ -36,7 +36,7 @@ const RULES = {
   NIM_MAX: 15,
   ABSTRAK_MAX: 800,
   KEYWORD_MIN: 1,
-  KEYWORD_MAX: 40,
+  KEYWORD_MAX: 5,
   KEYWORD_CHAR_MIN: 4,
   KEYWORD_CHAR_MAX: 20,
   PEMBIMBING_CHAR_MIN: 5,
@@ -71,7 +71,7 @@ const RULES = {
       e.tahun = "Tahun harus 4 digit";
 
  if (kataKunci.length < RULES.KEYWORD_MIN || kataKunci.length > RULES.KEYWORD_MAX)
-  e.kataKunci = "Minimal 1 dan maksimal 40 kata kunci";
+  e.kataKunci = "Minimal 1 dan maksimal 5 kata kunci";
 
   if (abstrak.length > RULES.ABSTRAK_MAX)
   e.abstrak = "Abstrak maksimal 800 karakter";

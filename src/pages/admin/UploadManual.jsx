@@ -40,7 +40,7 @@ const RULES = {
   NIM_MAX: 15,
   ABSTRAK_MAX: 800,
   KEYWORD_MIN: 1,
-  KEYWORD_MAX: 40,
+  KEYWORD_MAX: 5,
 };
 
 
