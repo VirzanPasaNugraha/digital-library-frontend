@@ -24,6 +24,22 @@ export default function KelolaArsip() {
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState(null);
 
+  const RULES = {
+  JUDUL_MIN: 10,
+  JUDUL_MAX: 160,
+  PENULIS_MAX: 80,
+  NIM_MIN: 10,
+  NIM_MAX: 15,
+  ABSTRAK_MAX: 800,
+  KEYWORD_MIN: 1,
+  KEYWORD_MAX: 40,
+  KEYWORD_CHAR_MIN: 4,
+  KEYWORD_CHAR_MAX: 20,
+  PEMBIMBING_CHAR_MIN: 5,
+  PEMBIMBING_CHAR_MAX: 30,
+};
+
+
   const fetchArsip = async () => {
     setLoading(true);
     setMessage("");
@@ -233,16 +249,37 @@ function EditMetadataModal({ open, doc, onClose, onSave }) {
 
   if (!open) return null;
 
-  const validate = () => {
-    if (!judul.trim()) return "Judul wajib diisi.";
-    if (!penulis.trim()) return "Penulis wajib diisi.";
-    if (!nim.trim()) return "NIM wajib diisi.";
-    if (!prodi) return "Prodi wajib dipilih.";
-    if (!tipe) return "Jenis dokumen wajib dipilih.";
-    if (!tahun.trim()) return "Tahun wajib diisi.";
-    if (!/^\d{4}$/.test(tahun.trim())) return "Tahun harus 4 digit (contoh: 2025).";
-    return "";
-  };
+ const validate = () => {
+  if (judul.length < RULES.JUDUL_MIN || judul.length > RULES.JUDUL_MAX)
+    return "Judul minimal 10 dan maksimal 160 karakter.";
+
+  if (!penulis || penulis.length > RULES.PENULIS_MAX)
+    return "Penulis wajib diisi (maks 80 karakter).";
+
+  if (nim.length < RULES.NIM_MIN || nim.length > RULES.NIM_MAX)
+    return "NIM minimal 10 dan maksimal 15 karakter.";
+
+  if (!prodi)
+    return "Program studi wajib dipilih.";
+
+  if (!tipe)
+    return "Jenis dokumen wajib dipilih.";
+
+  if (!/^\d{4}$/.test(tahun))
+    return "Tahun harus 4 digit.";
+
+  if (
+    keywords.length < RULES.KEYWORD_MIN ||
+    keywords.length > RULES.KEYWORD_MAX
+  )
+    return "Minimal 1 dan maksimal 40 kata kunci.";
+
+  if (abstrak.length > RULES.ABSTRAK_MAX)
+    return "Abstrak maksimal 800 karakter.";
+
+  return "";
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -339,7 +376,13 @@ function EditMetadataModal({ open, doc, onClose, onSave }) {
             <TagInput label="Kata Kunci" values={keywords} setValues={setKeywords} />
           </div>
 
-          <TextAreaField label="Abstrak" value={abstrak} onChange={setAbstrak} />
+        <TextAreaField
+  label="Abstrak"
+  value={abstrak}
+  onChange={setAbstrak}
+  maxLength={RULES.ABSTRAK_MAX}
+/>
+
         </form>
 
         {/* Footer sticky */}
@@ -401,19 +444,23 @@ function SelectField({ label, value, onChange, options }) {
   );
 }
 
-function TextAreaField({ label, value, onChange }) {
+function TextAreaField({ label, value, onChange, maxLength }) {
   return (
     <div className="md:col-span-2">
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label className="block text-sm font-medium">{label}</label>
       <textarea
         value={value}
+        maxLength={maxLength}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full h-40 p-3 mt-1 border rounded-lg focus:ring-2 focus:ring-green-500"
-        placeholder={`Masukkan ${label.toLowerCase()}`}
+        className="w-full h-40 p-3 mt-1 border rounded"
       />
+      <div className="flex justify-end text-xs text-gray-500">
+        {value.length}/{maxLength}
+      </div>
     </div>
   );
 }
+
 
 /**
  * TagInput (keyword style)
@@ -424,15 +471,28 @@ function TagInput({ label, values, setValues }) {
   const [input, setInput] = useState("");
 
   const addValue = (val) => {
-    const v = (val || "").trim();
-    if (!v) return;
+  const v = (val || "").trim();
+  if (!v) return;
 
-    // duplikat case-insensitive
-    const exists = (values || []).some((x) => String(x).toLowerCase() === v.toLowerCase());
-    if (exists) return;
+  if (label === "Kata Kunci") {
+    if (
+      v.length < RULES.KEYWORD_CHAR_MIN ||
+      v.length > RULES.KEYWORD_CHAR_MAX
+    ) return;
+  }
 
-    setValues([...(values || []), v]);
-  };
+  if (label === "Pembimbing") {
+    if (
+      v.length < RULES.PEMBIMBING_CHAR_MIN ||
+      v.length > RULES.PEMBIMBING_CHAR_MAX
+    ) return;
+  }
+
+  if (values.some(x => x.toLowerCase() === v.toLowerCase())) return;
+
+  setValues([...values, v]);
+};
+
 
   const onKeyDown = (e) => {
     if (e.key === "Enter") {

@@ -28,6 +28,20 @@ const [uploadedPdfUrl, setUploadedPdfUrl] = useState("");
   const [message, setMessage] = useState("");
 
 
+const RULES = {
+  JUDUL_MIN: 10,
+  JUDUL_MAX: 160,
+  PENULIS_MAX: 80,
+  NIM_MIN: 10,
+  NIM_MAX: 15,
+  ABSTRAK_MAX: 800,
+  KEYWORD_MIN: 1,
+  KEYWORD_MAX: 40,
+  KEYWORD_CHAR_MIN: 4,
+  KEYWORD_CHAR_MAX: 20,
+  PEMBIMBING_CHAR_MIN: 5,
+  PEMBIMBING_CHAR_MAX: 30,
+};
 
   useEffect(() => {
   return () => {
@@ -40,22 +54,27 @@ const [uploadedPdfUrl, setUploadedPdfUrl] = useState("");
   const validateForm = () => {
     const e = {};
 
-    if (judul.length < 10 || judul.length > 80)
-      e.judul = "Judul minimal 10 dan maksimal 80 karakter";
+   if (judul.length < RULES.JUDUL_MIN || judul.length > RULES.JUDUL_MAX)
+  e.judul = "Judul minimal 10 dan maksimal 160 karakter";
 
-    if (!penulis || penulis.length > 40)
-      e.penulis = "Penulis wajib diisi (maks 40 karakter)";
 
-    if (nim.length < 10 || nim.length > 15)
-      e.nim = "NIM minimal 10 dan maksimal 15 karakter";
+   if (!penulis || penulis.length > RULES.PENULIS_MAX)
+  e.penulis = "Penulis wajib diisi (maks 80 karakter)";
+
+   if (nim.length < RULES.NIM_MIN || nim.length > RULES.NIM_MAX)
+  e.nim = "NIM minimal 10 dan maksimal 15 karakter";
+
 
     if (!prodi) e.prodi = "Program studi wajib dipilih";
 
     if (!tahun || tahun.length !== 4)
       e.tahun = "Tahun harus 4 digit";
 
-    if (kataKunci.length < 1 || kataKunci.length > 20)
-      e.kataKunci = "Minimal 1 dan maksimal 20 kata kunci";
+ if (kataKunci.length < RULES.KEYWORD_MIN || kataKunci.length > RULES.KEYWORD_MAX)
+  e.kataKunci = "Minimal 1 dan maksimal 20 kata kunci";
+
+  if (abstrak.length > RULES.ABSTRAK_MAX)
+  e.abstrak = "Abstrak maksimal 800 karakter";
 
     if (!file) e.file = "File PDF wajib diupload";
 
@@ -89,18 +108,48 @@ const handlePembimbingKeyDown = (e) => {
  const addKeyword = () => {
   const v = inputKeyword.trim();
   if (!v) return;
+
+  if (
+    v.length < RULES.KEYWORD_CHAR_MIN ||
+    v.length > RULES.KEYWORD_CHAR_MAX
+  ) {
+    setErrors(p => ({
+      ...p,
+      kataKunci: "Keyword 4–40 karakter",
+    }));
+    return;
+  }
+
   if (kataKunci.some(k => k.toLowerCase() === v.toLowerCase())) return;
+
   setKataKunci([...kataKunci, v]);
   setInputKeyword("");
+  setErrors(p => ({ ...p, kataKunci: undefined }));
 };
+
 
 const addPembimbing = () => {
   const v = inputPembimbing.trim();
   if (!v) return;
+
+  if (
+    v.length < RULES.PEMBIMBING_CHAR_MIN ||
+    v.length > RULES.PEMBIMBING_CHAR_MAX
+  ) {
+    setErrors(p => ({
+      ...p,
+      pembimbing: "Nama pembimbing 5–30 karakter",
+    }));
+    return;
+  }
+
   if (pembimbing.some(p => p.toLowerCase() === v.toLowerCase())) return;
+
   setPembimbing([...pembimbing, v]);
   setInputPembimbing("");
+  setErrors(p => ({ ...p, pembimbing: undefined }));
 };
+
 
 
 
@@ -143,6 +192,7 @@ const addPembimbing = () => {
     setMessage("");
 
     if (!validateForm()) return;
+
 
     try {
       setLoading(true);
@@ -261,7 +311,13 @@ setUploadedPdfUrl(res.data.document.pdfUrl);
           error={errors.kataKunci}
         />
 
-        <TextAreaField label="Abstrak" value={abstrak} onChange={setAbstrak} />
+       <TextAreaField
+  label="Abstrak"
+  value={abstrak}
+  onChange={setAbstrak}
+  maxLength={RULES.ABSTRAK_MAX}
+/>
+
 
         <div>
           <label className="block mb-1 text-sm font-medium">Upload File PDF</label>

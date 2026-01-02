@@ -34,13 +34,13 @@ const [uploadedPdfUrl, setUploadedPdfUrl] = useState("");
   // ===== VALIDATION RULES (UPLOAD MANUAL) =====
 const RULES = {
   JUDUL_MIN: 10,
-  JUDUL_MAX: 80,
-  PENULIS_MAX: 40,
+  JUDUL_MAX: 160,
+  PENULIS_MAX: 80,
   NIM_MIN: 10,
   NIM_MAX: 15,
-  ABSTRAK_MAX: 400,
+  ABSTRAK_MAX: 800,
   KEYWORD_MIN: 1,
-  KEYWORD_MAX: 20,
+  KEYWORD_MAX: 40,
 };
 
 
@@ -104,11 +104,11 @@ const handlePembimbingKeyDown = (e) => {
 const validateForm = () => {
   const e = {};
 
-  if (judul.length < 10 || judul.length > 80)
-    e.judul = "Judul minimal 10 dan maksimal 80 karakter";
+  if (judul.length < 10 || judul.length > 160)
+    e.judul = "Judul minimal 10 dan maksimal 160 karakter";
 
-  if (!penulis || penulis.length > 40)
-    e.penulis = "Penulis wajib diisi (maks 40 karakter)";
+  if (!penulis || penulis.length > 80)
+    e.penulis = "Penulis wajib diisi (maks 80 karakter)";
 
   if (nim.length < 10 || nim.length > 15)
     e.nim = "NIM minimal 10 dan maksimal 15 karakter";
@@ -277,12 +277,12 @@ setFilePdf(null);
   label="Judul"
   value={judul}
   onChange={setJudul}
-  error={errors.judul} minLength={10} maxLength={80} />
+  error={errors.judul} minLength={10} maxLength={160} />
          <InputField
   label="Penulis"
   value={penulis}
   onChange={setPenulis}
-  error={errors.penulis} maxLength={40} />
+  error={errors.penulis} maxLength={80} />
 <InputField
   label="NIM"
   value={nim}
