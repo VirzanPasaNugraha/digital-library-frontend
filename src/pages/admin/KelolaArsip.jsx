@@ -251,8 +251,22 @@ function EditMetadataModal({ open, doc, onClose, onSave }) {
     setProdi(doc?.prodi || "IF");
     setTipe(doc?.tipe || "Skripsi");
     setTahun(doc?.tahun ? String(doc.tahun) : "");
-    setPembimbing(normalizeArray(doc?.pembimbing));
-    setKeywords(normalizeArray(doc?.keywords));
+   setPembimbing(
+  normalizeArray(doc?.pembimbing).filter(
+    (p) =>
+      p.length >= RULES.PEMBIMBING_CHAR_MIN &&
+      p.length <= RULES.PEMBIMBING_CHAR_MAX
+  )
+);
+
+setKeywords(
+  normalizeArray(doc?.keywords).filter(
+    (k) =>
+      k.length >= RULES.KEYWORD_CHAR_MIN &&
+      k.length <= RULES.KEYWORD_CHAR_MAX
+  )
+);
+
     setAbstrak(Array.isArray(doc?.abstrak) ? doc.abstrak.join("\n") : (doc?.abstrak || ""));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
