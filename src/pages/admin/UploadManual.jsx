@@ -56,7 +56,7 @@ KEYWORD_CHAR_MAX: 80,
   const value = inputKeyword.trim();
   if (!value) return;
 
-  if (value.length < 4 || value.length > 20) {
+  if (value.length < 4 || value.length > 80) {
   setErrors(p => ({ ...p, kataKunci: "Keyword 4–80 karakter" }));
   return;
 }

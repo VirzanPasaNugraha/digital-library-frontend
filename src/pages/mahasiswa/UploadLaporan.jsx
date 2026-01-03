@@ -38,7 +38,7 @@ const RULES = {
   KEYWORD_MIN: 1,
   KEYWORD_MAX: 5,
   KEYWORD_CHAR_MIN: 4,
-  KEYWORD_CHAR_MAX: 20,
+  KEYWORD_CHAR_MAX: 80,
   PEMBIMBING_CHAR_MIN: 5,
   PEMBIMBING_CHAR_MAX: 80,
 };
@@ -115,7 +115,7 @@ const handlePembimbingKeyDown = (e) => {
   ) {
     setErrors(p => ({
       ...p,
-      kataKunci: "Keyword 4–20 karakter",
+      kataKunci: "Keyword 4–80 karakter",
     }));
     return;
   }
