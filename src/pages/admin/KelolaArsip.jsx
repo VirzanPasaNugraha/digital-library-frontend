@@ -484,78 +484,81 @@ function TextAreaField({ label, value, onChange, maxLength }) {
  */
 function TagInput({ label, values, setValues }) {
   const [input, setInput] = useState("");
+  const [error, setError] = useState("");
 
   const addValue = (val) => {
-  const v = (val || "").trim();
-  if (!v) return;
+    const v = (val || "").trim();
+    if (!v) return;
 
- if (
-  v.length < RULES.KEYWORD_CHAR_MIN ||
-  v.length > RULES.KEYWORD_CHAR_MAX
-) {
-  setError("Kata kunci harus 4–20 karakter");
-  return;
-}
+    // ===== KHUSUS KATA KUNCI =====
+    if (label === "Kata Kunci") {
+      if (values.length >= RULES.KEYWORD_MAX) {
+        setError("Maksimal 5 kata kunci");
+        return;
+      }
 
+      if (
+        v.length < RULES.KEYWORD_CHAR_MIN ||
+        v.length > RULES.KEYWORD_CHAR_MAX
+      ) {
+        setError("Kata kunci harus 4–20 karakter");
+        return;
+      }
+    }
 
-  if (label === "Pembimbing") {
-    if (
-      v.length < RULES.PEMBIMBING_CHAR_MIN ||
-      v.length > RULES.PEMBIMBING_CHAR_MAX
-    ) return;
-  }
+    // ===== KHUSUS PEMBIMBING =====
+    if (label === "Pembimbing") {
+      if (
+        v.length < RULES.PEMBIMBING_CHAR_MIN ||
+        v.length > RULES.PEMBIMBING_CHAR_MAX
+      ) {
+        setError("Nama pembimbing 5–80 karakter");
+        return;
+      }
+    }
 
-  if (values.some(x => x.toLowerCase() === v.toLowerCase())) return;
+    if (values.some(x => x.toLowerCase() === v.toLowerCase())) return;
 
-  setValues([...values, v]);
-};
-
+    setValues([...values, v]);
+    setInput("");
+    setError("");
+  };
 
   const onKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       addValue(input);
-      setInput("");
     }
   };
 
   const removeAt = (idx) => {
-    setValues((values || []).filter((_, i) => i !== idx));
+    setValues(values.filter((_, i) => i !== idx));
+    setError("");
   };
 
   return (
     <div>
-      <label className="block mb-1 text-sm font-medium text-gray-700">{label}</label>
+      <label className="block mb-1 text-sm font-medium">{label}</label>
 
-      <div className="flex flex-wrap gap-2 p-3 border rounded-lg focus-within:ring-2 focus-within:ring-green-500">
-        {(values || []).map((v, idx) => (
-          <span
-            key={`${v}-${idx}`}
-            className="flex items-center gap-1 px-2 py-1 text-xs text-green-800 bg-green-100 rounded-full"
-          >
+      <div className={`flex flex-wrap gap-2 p-3 border rounded ${error ? "border-red-500" : ""}`}>
+        {values.map((v, i) => (
+          <span key={i} className="px-2 py-1 text-xs bg-green-100 rounded">
             {v}
-            <button
-              type="button"
-              onClick={() => removeAt(idx)}
-              className="font-bold text-green-600 hover:text-red-600"
-              aria-label="Remove"
-            >
-              ×
-            </button>
+            <button type="button" onClick={() => removeAt(i)}>×</button>
           </span>
         ))}
 
         <input
-          type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
+          className="flex-1 min-w-[120px] outline-none text-sm"
           placeholder={`Ketik ${label.toLowerCase()} lalu Enter`}
-          className="flex-1 text-sm outline-none min-w-[140px]"
         />
       </div>
 
-      <p className="mt-1 text-xs text-gray-500">Tekan Enter untuk menambahkan.</p>
+      {error && <p className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
 }
+
