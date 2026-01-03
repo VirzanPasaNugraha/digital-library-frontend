@@ -42,7 +42,7 @@ const RULES = {
   KEYWORD_MIN: 1,
   KEYWORD_MAX: 5,
   KEYWORD_CHAR_MIN: 4,
-KEYWORD_CHAR_MAX: 20,
+KEYWORD_CHAR_MAX: 80,
 
 };
 
@@ -57,7 +57,7 @@ KEYWORD_CHAR_MAX: 20,
   if (!value) return;
 
   if (value.length < 4 || value.length > 20) {
-  setErrors(p => ({ ...p, kataKunci: "Keyword 4–20 karakter" }));
+  setErrors(p => ({ ...p, kataKunci: "Keyword 4–80 karakter" }));
   return;
 }
 
@@ -183,7 +183,7 @@ if (
   value.length > RULES.KEYWORD_CHAR_MAX
 )
  {
-    setErrors(p => ({ ...p, kataKunci: "Keyword 4–20 karakter" }));
+    setErrors(p => ({ ...p, kataKunci: "Keyword 4–80 karakter" }));
     return;
   }
 

@@ -30,7 +30,7 @@ const RULES = {
   KEYWORD_MIN: 1,
   KEYWORD_MAX: 5,
   KEYWORD_CHAR_MIN: 4,
-  KEYWORD_CHAR_MAX: 20,
+  KEYWORD_CHAR_MAX: 80,
 
   PEMBIMBING_CHAR_MIN: 5,
   PEMBIMBING_CHAR_MAX: 80,
@@ -515,7 +515,7 @@ function TagInput({ label, values, setValues }) {
         v.length < RULES.KEYWORD_CHAR_MIN ||
         v.length > RULES.KEYWORD_CHAR_MAX
       ) {
-        setError("Kata kunci harus 4–20 karakter");
+        setError("Kata kunci harus 4–80 karakter");
         return;
       }
     }
