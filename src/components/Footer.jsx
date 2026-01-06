@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="py-5 bg-green-700 text-white">
       <div className="container mx-auto px-4 text-center">
         <p className="text-sm break-words">
-          © {new Date().getFullYear()} Digital Library FTI – Universitas Sebelas April Sumedang
+          Digital Library FTI - Universitas Sebelas April | Kerja Praktek {new Date().getFullYear()}
         </p>
       </div>
     </footer>
