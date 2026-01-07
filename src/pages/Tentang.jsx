@@ -1,6 +1,7 @@
 // src/pages/Tentang.jsx
 import React from "react";
 import { FiUpload, FiSearch, FiFileText, FiCheckCircle } from "react-icons/fi";
+import { FaWhatsapp, FaLinkedin } from "react-icons/fa";
 
 export default function Tentang() {
   const features = [
@@ -146,14 +147,15 @@ export default function Tentang() {
           <p className="text-sm text-gray-600">{dev.npm}</p>
         </div>
 
-       <div className="flex justify-center gap-3">
+<div className="flex justify-center gap-4">
   <a
     href={dev.wa}
     target="_blank"
     rel="noopener noreferrer"
-    className="bg-green-600 text-white text-sm px-4 py-2 rounded-full hover:bg-green-700 transition"
+    className="text-green-600 hover:text-green-700 text-2xl transition"
+    title="WhatsApp"
   >
-    WhatsApp
+    <FaWhatsapp />
   </a>
 
   {dev.linkedin && (
@@ -161,12 +163,14 @@ export default function Tentang() {
       href={dev.linkedin}
       target="_blank"
       rel="noopener noreferrer"
-      className="bg-blue-600 text-white text-sm px-4 py-2 rounded-full hover:bg-blue-700 transition"
+      className="text-blue-600 hover:text-blue-700 text-2xl transition"
+      title="LinkedIn"
     >
-      LinkedIn
+      <FaLinkedin />
     </a>
   )}
 </div>
+
 
       </div>
     ))}
