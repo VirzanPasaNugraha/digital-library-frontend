@@ -13,7 +13,7 @@ export default defineConfig({
     proxy: {
       // ✅ Semua request frontend ke /api diteruskan ke backend Express kamu di Vercel
       "/api": {
-        target: "https://digital-library-backend-benar1.vercel.app",
+        target: "https://diglib-fti.unsap.ac.id",
         changeOrigin: true,
         secure: true,
       },
