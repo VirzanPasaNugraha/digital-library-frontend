@@ -109,6 +109,7 @@ export default function Tentang() {
     npm: "220660121036",
     photo: "/Fajar.jpeg",
     wa: "https://wa.me/6281213498274",
+    linkedin: "https://www.linkedin.com/in/muhammad-fajar-luthfiana-030762371/",
   },
   {
     name: "Virzan Pasa Nugraha",
